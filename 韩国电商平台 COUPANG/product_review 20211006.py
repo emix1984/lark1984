@@ -3,7 +3,7 @@ import parsel
 import re
 import csv
 
-for page in range (1,3):
+for page in range (1,30):
     print(f'==================正在爬取{page}页内容=======================')
 
     url = f'https://www.coupang.com/vp/product/reviews?productId=133257156&page={page}&size=5&sortBy=ORDER_SCORE_ASC&ratings=&q=&viRoleCode=3&ratingSummary=true'
@@ -29,5 +29,5 @@ for page in range (1,3):
         print(user, time, title, headline, review_content, img_url,img_url_origin)
         with open('coupang_product_reviews_data.csv', mode='a', encoding='utf-8', newline="") as f:
             csv_write = csv.writer(f)
-            csv_write.writerow([user, time, title, img_url,img_url_origin])
+            csv_write.writerow([user, time, title, headline, review_content, img_url,img_url_origin])
 f.close()
