@@ -37,16 +37,16 @@ def run(html_url):
             new_title = new_title[:10]
         save(new_title, img_name, img_url)
 
-time_1 = time.time()
-for page in range(1,11):
-    run(f'https://www.fabiaoqing.com/biaoqing/lists/page/{page}.html')
-print(f'总耗时，{time.time() - time_1}')
+# time_1 = time.time()
+# for page in range(1,11):
+#     run(f'https://www.fabiaoqing.com/biaoqing/lists/page/{page}.html')
+# print(f'总耗时，{time.time() - time_1}')
 
-# if __name__ = '__main__':
-#     time_1 = time.time()
-#     exe = concurrent.futures.ThreadPoolExecutor(max_workers=10)
-#     for page in range(1, 200)
-#         url = f'https://www.fabiaoqing.com/biaoqing/lists/page/{page}.html'
-#         exe.submit(run, url)
-#     exe.shutdown()
-#    print(f'总耗时，{time.time()-time_1}')
+if __name__ == '__main__':
+    time_1 = time.time()
+    exe = concurrent.futures.ThreadPoolExecutor(max_workers=10)
+    for page in range(1, 11):
+        url = f'https://www.fabiaoqing.com/biaoqing/lists/page/{page}.html'
+        exe.submit(run, url)
+    exe.shutdown()
+    print(f'总耗时:{time.time()-time_1}')
