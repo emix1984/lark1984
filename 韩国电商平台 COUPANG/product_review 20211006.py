@@ -1,6 +1,5 @@
 import requests
 import parsel
-import re
 import csv
 
 for page in range (1,30):
