@@ -44,7 +44,9 @@ def run(html_url):
 
 if __name__ == '__main__':
     time_1 = time.time()
+    # concurrent.futures模块提供了两种executor的子类，ThreadPoolExecutor各自独立操作一个线程和 ProcessPoolExecutor一个进程池
     exe = concurrent.futures.ThreadPoolExecutor(max_workers=10)
+    # exe = concurrent.futures.ProcessPoolExecutor(max_workers=10)
     for page in range(1, 11):
         url = f'https://www.fabiaoqing.com/biaoqing/lists/page/{page}.html'
         exe.submit(run, url)
