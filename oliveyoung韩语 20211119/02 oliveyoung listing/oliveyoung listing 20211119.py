@@ -49,4 +49,4 @@ for page in range (1,2):
         print(d_url, category, number, prd_name_mumber)
         with open('oliveyoung 20211119.csv', mode='a', encoding='utf-8', newline="") as f:
             csv_write = csv.writer(f)
-            csv_write.writerow([d_url, category, number])
+            csv_write.writerow([d_url, category, number/4])

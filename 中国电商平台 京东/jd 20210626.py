@@ -18,6 +18,7 @@ def drop_down():
 
 def parse_data():
     lis = driver.find_elements_by_css_selector('.gl-item')
+    print(lis)
 
     for li in lis:
         try:
