@@ -2,12 +2,32 @@
 # 二级分类编码，并且拼合二级分类的网站地址
 # 三级分类编码，并且拼合三级分类网站地址
 # 获得三级分类地址里产品总数以及总页数
+# _*_ coding:utf8 _*_
+# @author：liuying
+# date：2021-11-19
+# version 02
 
 import requests
 import parsel
 import csv
 import re
 import time
+
+# 创建csv文件和表头
+f = open('oliveyoung category.csv', mode='a', encoding='utf-8', newline='')
+csv_writer = csv.DictWriter(f, fieldnames=[
+            '一级分类名称',
+            '一级分类编码',
+            '二级分类名称',
+            '二级分类编码',
+            '三级分类名称',
+            '三级分类编码',
+            '三级分类链接',
+            '产品数量',
+            '48产品页数',
+            '采集时间',
+])
+csv_writer.writeheader()
 
 # 项目计时用
 time_1 = time.time()
@@ -52,12 +72,25 @@ for category1_name, category1_code in zip(category1_names, category1_codes):
             number_raw = re.findall('<span>(.*?)</span>', html_data_category3, re.S)[11]
             number = number_raw.strip()
             page_number = int(int(number)/48) + 1
-            print(number, page_number)
+            # print(number, page_number)
+
             # 时间戳
             rightnow = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
-            print(rightnow, '正在采集：', category1_name, category2_name, category3_name)
-            with open('oliveyoung category 20211119.csv', mode='a', encoding='utf-8', newline="") as f:
-                csv_write = csv.writer(f)
-                csv_write.writerow([category1_name, category1_code, category2_name, category2_code, category3_name, category3_code, category3_url, number, page_number, rightnow])
-                print(f'总耗时，{time.time() - time_1}')
+
+            # 建立字典存储到文件
+            dict = {
+                '一级分类名称': category1_name,
+                '一级分类编码': category1_code,
+                '二级分类名称': category2_name,
+                '二级分类编码': category2_code,
+                '三级分类名称': category3_name,
+                '三级分类编码': category3_code,
+                '三级分类链接': category3_url,
+                '产品数量': number,
+                '48产品页数': page_number,
+                '采集时间': rightnow,
+                    }
+            print(rightnow, '....正在采集：', category1_name, category2_name, category3_name)
+            csv_writer.writerow(dict)
+            print(f'★★★采集完成★★★ 累计耗时：，{time.time() - time_1}')
