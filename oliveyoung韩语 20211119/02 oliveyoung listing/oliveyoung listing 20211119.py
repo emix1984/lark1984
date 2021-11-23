@@ -61,7 +61,7 @@ with open('oliveyoung category 20211119.csv', mode='r', encoding='utf-8') as f:
         pageno = int(pageno_raw) # 将三级分类网址下总页面数从文字类型转换为数值型
         print(category1,category2,category3,pageno)
 
-        for page in range(1, pageno):
+        for page in range(1, pageno+1): # 因为range函数计算的是区间，开始的数字是1，所以计算出来的页码+1
             print(page)
             print(f'==================正在爬取',category1,category2, category3, f'第{page}页内容=======================')
             rowsPerPage = 48 # 每页显示产品数 24, 36, 48
