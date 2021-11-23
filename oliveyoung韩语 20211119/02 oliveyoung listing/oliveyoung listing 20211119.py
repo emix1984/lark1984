@@ -21,6 +21,20 @@ import csv
 import re
 import time
 
+# 创建csv文件和表头
+f = open('oliveyoung_listing.csv', mode='a', encoding='utf-8', newline='')
+csv_writer = csv.DictWriter(f, fieldnames=[
+'三级类目名称',
+'三级类目名称1',
+'三级类目编码',
+'三级类目产品数',
+'页码',
+'产品编码',
+'产品链接',
+'采集时间',
+])
+csv_writer.writeheader()
+
 # 项目计时用
 time_1 = time.time()
 
@@ -78,7 +92,18 @@ with open('oliveyoung category 20211119.csv', mode='r', encoding='utf-8') as f:
                 # color = re.findall('<dd>(.*?)</dd>', d_html_data)
 
                 print(category, pageno, number, prd_name_mumber)
-                with open('oliveyoung listing 20211119.csv', mode='a', encoding='utf-8', newline="") as f:
-                    csv_write = csv.writer(f)
-                    csv_write.writerow([d_url, category, number])
-                    print(f'===采集完成===累计耗时：', time.time() - time_1, rightnow)
+
+                # 建立字典存储到文件
+                dict = {
+                    '三级类目名称': category,
+                    '三级类目名称1': category3,
+                    '三级类目编码': category3_code,
+                    '三级类目产品数': number,
+                    '页码': page,
+                    '产品编码': prd_name_mumber,
+                    '产品链接': d_url,
+                    '采集时间': rightnow,
+                }
+                print(rightnow, '....正在采集：', category1, category2, category3)
+                csv_writer.writerow(dict)
+print(f'===采集完成===累计耗时：', time.time() - time_1, rightnow)
