@@ -2,7 +2,8 @@
 # 1 解决三级分类链接下的产品数量采集
 # 2 解决页面生成逻辑
 # 3 采集产品详情页链接
-# 下面是示例链接，按照符号& 进行换行处理，dispCatNo=类别编码；&prdSort=01默认01是按照人气排序方式；pageIdx=1页码第一页；trackingCd=Cat1000001000100080001_Small这是追踪用记得要和分类编码组合使用
+# 下面是示例链接，按照符号& 进行换行处理
+# dispCatNo=类别编码；&prdSort=01默认01是按照人气排序方式；pageIdx=1页码第一页；trackingCd=Cat1000001000100080001_Small这是追踪用记得要和分类编码组合使用
 # https://www.oliveyoung.co.kr/store/display/getMCategoryList.do?dispCatNo=1000001000100080001
 # &fltDispCatNo=
 # &prdSort=01
@@ -16,13 +17,14 @@
 # &cShowCnt=
 # &trackingCd=Cat1000001000100080001_Small
 
+from time import sleep
 import requests
 import csv
 import re
 import time
 
 # 创建csv文件和表头
-f = open('02_oliveyoung_listing.csv', mode='a', encoding='utf-8', newline='')
+f = open('.\\02_oliveyoung_listing.csv', mode='a', encoding='utf-8', newline='')
 csv_writer = csv.DictWriter(f, fieldnames=[
 '三级类目名称',
 '三级类目编码',
@@ -61,15 +63,16 @@ with open('01_oliveyoung_category.csv', mode='r', encoding='utf-8') as f:
         print(category1,category2,category3,pageno)
 
         for page in range(1, pageno+1): # 因为range函数计算的是区间，开始的数字是1，所以计算出来的页码+1
-            print(page)
             print(f'==================正在爬取',category1,category2, category3, f'第{page}页内容=======================')
-            rowsPerPage = 48 # 每页显示产品数 24, 36, 48
-
-            url = f'https://www.oliveyoung.co.kr/store/display/getMCategoryList.do?dispCatNo={category3_code}&fltDispCatNo=&prdSort=03&pageIdx={page}&rowsPerPage={rowsPerPage}&searchTypeSort=btn_thumb&plusButtonFlag=N&isLoginCnt=1&aShowCnt=0&bShowCnt=0&cShowCnt=0&trackingCd=Cat{category3_code}_Small'
+            prdSort = "3" # 产品列表按照01人气排序；02最新登录排序；03按照销量排序；04按照最低价格排序；05按照最高价格排序
+            rowsPerPage = "48" # 每页显示产品数 24, 36, 48
+            url = f'https://www.oliveyoung.co.kr/store/display/getMCategoryList.do?dispCatNo={category3_code}&fltDispCatNo=&prdSort={prdSort}&pageIdx={page}&rowsPerPage={rowsPerPage}&searchTypeSort=btn_thumb&plusButtonFlag=N&isLoginCnt=1&aShowCnt=0&bShowCnt=0&cShowCnt=0&trackingCd=Cat{category3_code}_Small'
             headers = {
                 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.99 Safari/537.36'
             }
+            sleep(1)  # 等待页面加载0.5秒
             response = requests.get(url=url, headers=headers)
+            sleep(6)  # 等待页面加载3秒
             html_data = response.text
             # print(html_data)
 
@@ -85,14 +88,6 @@ with open('01_oliveyoung_category.csv', mode='r', encoding='utf-8') as f:
 
             for d_url in urls:
                 prd_name_number = re.findall(r'goodsNo=(.*?)&', d_url)[0]
-                # d_response = requests.get(url=d_url, headers=headers)
-                # d_html_data = d_response.text
-
-                # prd_name = re.findall(r'<p class="prd_name">(.*?)</p>', d_html_data)
-                # price_1 = re.findall('<strike>(.*?)</strike>', d_html_data)
-                # price_2 = re.findall('<strong>(.*?)</strong>', d_html_data)[2]
-                # color = re.findall('<dd>(.*?)</dd>', d_html_data)
-
                 print(category, pageno, number, prd_name_number)
 
                 # 建立字典存储到文件
@@ -107,4 +102,4 @@ with open('01_oliveyoung_category.csv', mode='r', encoding='utf-8') as f:
                 }
                 print(rightnow, '....正在采集：', category1, category2, category3, category)
                 csv_writer.writerow(dict)
-            print(f'===采集完成===累计耗时：', time.time() - time_1, rightnow)
+        print(f'===采集完成===累计耗时：', time.time() - time_1, rightnow)

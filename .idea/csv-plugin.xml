@@ -66,7 +66,21 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\oliveyoung韩语 20211119\version01 oliveyoung category 单线程\01_oliveyoung_category.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\oliveyoung韩语 20211119\version01 oliveyoung category 单线程\02_oliveyoung_listing.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\oliveyoung韩语 20211119\version01 oliveyoung category 单线程\03_oliveyoung_detailpage_data.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />
