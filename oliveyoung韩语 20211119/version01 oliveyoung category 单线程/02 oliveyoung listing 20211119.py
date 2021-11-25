@@ -72,6 +72,7 @@ with open('01_oliveyoung_category.csv', mode='r', encoding='utf-8') as f:
             }
             sleep(1)  # 等待页面加载0.5秒
             response = requests.get(url=url, headers=headers)
+            print(response)
             sleep(6)  # 等待页面加载3秒
             html_data = response.text
             # print(html_data)
