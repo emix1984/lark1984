@@ -60,7 +60,7 @@ with open('01_oliveyoung_category.csv', mode='r', encoding='utf-8') as f:
         # url_category3 = list(d.values())[6]  # 提取三级分类网址链接生成列表
         pageno_raw = list(d.values())[8] # 选取三级分类网址下总页面数
         pageno = int(pageno_raw) # 将三级分类网址下总页面数从文字类型转换为数值型
-        print(category1,category2,category3,pageno)
+        print(category1, category2, category3, pageno)
 
         for page in range(1, pageno+1): # 因为range函数计算的是区间，开始的数字是1，所以计算出来的页码+1
             print(f'==================正在爬取',category1,category2, category3, f'第{page}页内容=======================')
