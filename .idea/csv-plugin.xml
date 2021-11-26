@@ -3,55 +3,6 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
-        <entry key="\oliveyoung韩语 20211119\01 oliveyoung category\oliveyoung category 20211119.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="\oliveyoung韩语 20211119\01 oliveyoung category\oliveyoung category 20211119.csv.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="\oliveyoung韩语 20211119\02 oliveyoung listing\oliveyoung 20211119.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="\oliveyoung韩语 20211119\02 oliveyoung listing\oliveyoung category 20211119.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="\oliveyoung韩语 20211119\02 oliveyoung listing\oliveyoung listing 20211119.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="\oliveyoung韩语 20211119\02 oliveyoung listing\oliveyoung_listing.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
-        <entry key="\oliveyoung韩语 20211119\03 oliveyoung detailpage\data.csv">
-          <value>
-            <Attribute>
-              <option name="separator" value="," />
-            </Attribute>
-          </value>
-        </entry>
         <entry key="\oliveyoung韩语 20211119\03 oliveyoung detailpage\oliveyoung detailpage data.csv">
           <value>
             <Attribute>
@@ -80,7 +31,7 @@
             </Attribute>
           </value>
         </entry>
-        <entry key="\oliveyoung韩语 20211119\version01 oliveyoung category 单线程\03_oliveyoung_detailpage_data.csv">
+        <entry key="\oliveyoung韩语 20211119\version01 oliveyoung category 单线程\text.csv">
           <value>
             <Attribute>
               <option name="separator" value="," />

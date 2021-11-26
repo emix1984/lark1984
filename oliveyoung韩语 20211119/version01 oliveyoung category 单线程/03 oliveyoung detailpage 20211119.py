@@ -1,6 +1,5 @@
 from time import sleep
 import time
-from selenium import webdriver
 from selenium.webdriver import Chrome, ChromeOptions # 配置chromedriver无界面方式
 from selenium.webdriver.chrome.service import Service # 升级后webdriver配置chromedriver.exe为服务
 from selenium.webdriver.common.by import By # python3.6 升级到 3.8后定位元素的方式变动
@@ -9,7 +8,8 @@ import csv
 
 
 # 创建csv文件和表头
-f = open('../03 oliveyoung detailpage/03_oliveyoung_detailpage_data.csv', mode='a', encoding='utf-8', newline='')
+f = open('03_oliveyoung_detailpage_data.csv', mode='a', encoding='utf-8', newline='')
+print(f'\033[32m>>>创建csv文件完毕！！！<<<\033[0m')
 csv_writer = csv.DictWriter(f, fieldnames=[
         '产品编码',
         '产品名称',
@@ -41,13 +41,14 @@ csv_writer = csv.DictWriter(f, fieldnames=[
         '当前网址',
         '当前时间',
 ])
-csv_writer.writeheader()
+# csv_writer.writeheader()
+# print(f'\033[32m>>>csv文件<表头>写入完毕！！！<<<\033[0m')
 
 # 项目计时用
 time_1 = time.time()
 
 # 拉取listing.csv数据中的产品详情页链接
-with open('02_oliveyoung_listing.csv', mode='r', encoding='utf-8') as f_listing:
+with open('./02_oliveyoung_listing03.csv', mode='r', encoding='utf-8') as f_listing:
     reader = csv.reader(f_listing)
     fieldnames_listing = next(reader)
     # print(fieldnames_listing)
@@ -58,7 +59,6 @@ with open('02_oliveyoung_listing.csv', mode='r', encoding='utf-8') as f_listing:
         for k, v in row.items():
             d_listing[k] = v
         urls_detailpage = list(d_listing.values())[5]
-        print(urls_detailpage)
 
         # 配置浏览器基本信息
         url_dp = urls_detailpage
@@ -70,105 +70,136 @@ with open('02_oliveyoung_listing.csv', mode='r', encoding='utf-8') as f_listing:
         s = Service(r"D:\lark1984\selenium\chromedriver.exe")
         driver_dp = Chrome(service=s, options=opt)
 
-        sleep(0.5) # 等待页面加载0.5秒
+        sleep(3) # 等待页面加载0.5秒
         driver_dp.get(url_dp)
-
-        sleep(3) # 等待页面加载3秒
-        driver_dp.find_element(By.XPATH, '//*[@id="buyInfo"]/a').click() # 点击详情页下方标签页
-        html_data_dp = driver_dp.page_source
+        html_data_dp = driver_dp.page_source # 转换页面源代码
         # print(html_data)
 
-        # detail page - product info
-        # 产品名称
-        product_code = re.findall(f'goodsNo=(.*?)&', url_dp, re.S)[0]
-        dp_name = driver_dp.find_element(By.XPATH, '//*[@id="Contents"]/div[2]/div[2]/div/p[2]').text
-        dp_img = driver_dp.find_element(By.XPATH, '//*[@id="mainImg"]').get_attribute('src')
-
-        # 开始判断是否存在 price-1 标签, <strike></strike>是唯一一个price-1标签用到的html标签
-        if "strike" in html_data_dp:
-                dp_price1 = driver_dp.find_element(By.XPATH, '//*[@class="price-1"]/strike').text
-                dp_price2 = driver_dp.find_element(By.XPATH, '//*[@class="price-2"]/strong').text
+        if "상품을 찾을 수 없습니다" in html_data_dp:
+            print(f'>>>\033[00;41m页面内商品不存在或已下架！\033[0m', urls_detailpage)
+            product_code = "",
+            dp_name = "상품을 찾을 수 없습니다",
+            dp_img = "",
+            dp_price2 = "",
+            dp_price1 = "",
+            ri_1 = "",
+            qi_1 = "",
+            dp_promo1 = "",
+            dp_promo2 = "",
+            dp_promo3 = "",
+            dp_promo4 = "",
+            dp_promo5 = "",
+            brand_name = "",
+            brand_id = "",
+            brand_logo = "",
+            detailpage_img = "",
+            bi_1 = "",
+            bi_2 = "",
+            bi_3 = "",
+            bi_4 = "",
+            bi_5 = "",
+            bi_6 = "",
+            bi_7 = "",
+            bi_8 = "",
+            bi_9 = "",
+            bi_10 = "",
+            bi_11 = "",
         else:
-                dp_price2 = driver_dp.find_element(By.XPATH, '//*[@class="price-2"]/strong').text
-                dp_price1 = driver_dp.find_element(By.XPATH, '//*[@class="price-2"]/strong').text
-        # print(dp_price1,dp_price2)
+            print(f'\033[33m>>>正在采集地址：\033[0m', urls_detailpage)
+            sleep(6) # 等待页面加载3秒
+            driver_dp.find_element(By.XPATH, '//*[@id="buyInfo"]/a').click() # 点击详情页下方标签页
 
-        # detail page - promotion
-        # <span class="icon_flag sale">세일</span>
-        # <span class="icon_flag delivery">오늘드림</span>
-        # <span class="icon_flag gift">증정</span>
-        # <span class="icon_flag plus">1+1</span>
-        # <span class="icon_flag coupon">쿠폰</span>
+            # detail page - product info
+            # 产品名称
+            product_code = re.findall(f'goodsNo=(.*?)&', url_dp, re.S)[0]
+            dp_name = driver_dp.find_element(By.XPATH, '//*[@id="Contents"]/div[2]/div[2]/div/p[2]').text
+            dp_img = driver_dp.find_element(By.XPATH, '//*[@id="mainImg"]').get_attribute('src')
 
-        # sale세일
-        if "icon_flag sale" in html_data_dp:
-                dp_promo1 = "세일"
-        else:
-                dp_promo1 = ""
+            # 开始判断是否存在 price-1 标签, <strike></strike>是唯一一个price-1标签用到的html标签
+            if "strike" in html_data_dp:
+                    dp_price1 = driver_dp.find_element(By.XPATH, '//*[@class="price-1"]/strike').text
+                    dp_price2 = driver_dp.find_element(By.XPATH, '//*[@class="price-2"]/strong').text
+            else:
+                    dp_price2 = driver_dp.find_element(By.XPATH, '//*[@class="price-2"]/strong').text
+                    dp_price1 = driver_dp.find_element(By.XPATH, '//*[@class="price-2"]/strong').text
+            # print(dp_price1,dp_price2)
 
-        # 오늘드림
-        if "icon_flag delivery" in html_data_dp:
-                dp_promo2 = "오늘드림"
-        else:
-                dp_promo2 = ""
+            # detail page - promotion
+            # <span class="icon_flag sale">세일</span>
+            # <span class="icon_flag delivery">오늘드림</span>
+            # <span class="icon_flag gift">증정</span>
+            # <span class="icon_flag plus">1+1</span>
+            # <span class="icon_flag coupon">쿠폰</span>
 
-        # 증정
-        if "icon_flag gift" in html_data_dp:
-                dp_promo3 = "증정"
-        else:
-                dp_promo3 = ""
+            # sale세일
+            if "icon_flag sale" in html_data_dp:
+                    dp_promo1 = "세일"
+            else:
+                    dp_promo1 = ""
 
-        # 1+1
-        if "icon_flag plus" in html_data_dp:
-                dp_promo4 = "1+1"
-        else:
-                dp_promo4 = ""
+            # 오늘드림
+            if "icon_flag delivery" in html_data_dp:
+                    dp_promo2 = "오늘드림"
+            else:
+                    dp_promo2 = ""
 
-        # 쿠폰
-        if "icon_flag coupon" in html_data_dp:
-                dp_promo5 = "쿠폰"
-        else:
-                dp_promo5 = ""
+            # 증정
+            if "icon_flag gift" in html_data_dp:
+                    dp_promo3 = "증정"
+            else:
+                    dp_promo3 = ""
 
-        brand_name = driver_dp.find_element(By.XPATH, '//*[@id="moveBrandShop_like"]/em').text.replace(' 브랜드관', "")
-        brand_logo_raw = driver_dp.find_element(By.XPATH, '//*[@id="moveBrandShop_like"]/span').get_attribute('style')
-        brand_logo = re.findall(r'\"(.*?)\"', brand_logo_raw)[0]
-        brand_id = driver_dp.find_element(By.XPATH, '//*[@id="brnd_wish"]').get_attribute('data-ref-onlbrndcd')
+            # 1+1
+            if "icon_flag plus" in html_data_dp:
+                    dp_promo4 = "1+1"
+            else:
+                    dp_promo4 = ""
 
-        # 상품설명 prd_detail_tab>id=productInfo
-        detailpage_img = "" # 后续待处理
+            # 쿠폰
+            if "icon_flag coupon" in html_data_dp:
+                    dp_promo5 = "쿠폰"
+            else:
+                    dp_promo5 = ""
 
-        # 구매정보 prd_detail_tab>id=buyInfo
-        bi_1 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[1]/dd').text
-        # volume/weight
-        bi_2 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[2]/dd').text
-        # ideal for
-        bi_3 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[3]/dd').text
-        # expiration date
-        bi_4 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[4]/dd').text
-        # how to use
-        bi_5 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[5]/dd').text
-        # manufacturer/distributor
-        bi_6 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[6]/dd').text
-        # country of manufacture
-        bi_7 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[7]/dd').text
-        # ingredients
-        bi_8 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[8]/dd').text
-        # MFDS Evaluation of functional cosmetics
-        bi_9 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[9]/dd').text
-        # cautions for use
-        bi_10 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[10]/dd').text
-        # quality assurance standard
-        bi_11 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[11]/dd').text
-        # customer service
+            brand_name = driver_dp.find_element(By.XPATH, '//*[@id="moveBrandShop_like"]/em').text.replace(' 브랜드관', "")
+            brand_logo_raw = driver_dp.find_element(By.XPATH, '//*[@id="moveBrandShop_like"]/span').get_attribute('style')
+            brand_logo = re.findall(r'\"(.*?)\"', brand_logo_raw)[0]
+            brand_id = driver_dp.find_element(By.XPATH, '//*[@id="brnd_wish"]').get_attribute('data-ref-onlbrndcd')
 
-        # 리뷰 prd_detail_tab>id=reviewInfo
-        ri_1_raw = driver_dp.find_element(By.XPATH, '//*[@id="reviewInfo"]/a/span').text
-        ri_1 = re.findall(f'\((.*?)\)', ri_1_raw)[0]
+            # 상품설명 prd_detail_tab>id=productInfo
+            detailpage_img = "" # 后续待处理
 
-        # Q&A  prd_detail_tab>id=qnaInfo
-        qi_1_raw = driver_dp.find_element(By.XPATH, '//*[@id="qnaInfo"]/a/span').text
-        qi_1 = re.findall(f'\((.*?)\)', qi_1_raw)[0]
+            # 구매정보 prd_detail_tab>id=buyInfo
+            bi_1 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[1]/dd').text
+            # volume/weight
+            bi_2 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[2]/dd').text
+            # ideal for
+            bi_3 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[3]/dd').text
+            # expiration date
+            bi_4 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[4]/dd').text
+            # how to use
+            bi_5 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[5]/dd').text
+            # manufacturer/distributor
+            bi_6 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[6]/dd').text
+            # country of manufacture
+            bi_7 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[7]/dd').text
+            # ingredients
+            bi_8 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[8]/dd').text
+            # MFDS Evaluation of functional cosmetics
+            bi_9 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[9]/dd').text
+            # cautions for use
+            bi_10 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[10]/dd').text
+            # quality assurance standard
+            bi_11 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[11]/dd').text
+            # customer service
+
+            # 리뷰 prd_detail_tab>id=reviewInfo
+            ri_1_raw = driver_dp.find_element(By.XPATH, '//*[@id="reviewInfo"]/a/span').text
+            ri_1 = re.findall(f'\((.*?)\)', ri_1_raw)[0]
+
+            # Q&A  prd_detail_tab>id=qnaInfo
+            qi_1_raw = driver_dp.find_element(By.XPATH, '//*[@id="qnaInfo"]/a/span').text
+            qi_1 = re.findall(f'\((.*?)\)', qi_1_raw)[0]
 
         #时间戳
         rightnow = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -205,9 +236,9 @@ with open('02_oliveyoung_listing.csv', mode='r', encoding='utf-8') as f_listing:
                 '当前网址': url_dp,
                 '当前时间': rightnow,
                 }
-        print(dp_name, dp_price2, dp_promo1, brand_name, bi_1, bi_4)
+        # print(dp_name, dp_price2, dp_promo1, brand_name, bi_1, bi_4)
         csv_writer.writerow(dict)
-        print(f'==========下载完成==========', dp_name, product_code,f'时间：', rightnow)
+        print(f'\033[31m时间：\033[0m', rightnow, f'\033[32m>>>数据采集完成：\033[0m', product_code, dp_name)
         driver_dp.close()
         driver_dp.quit()
-    print(f'===采集完成===累计耗时：', time.time() - time_1, rightnow)
+    print(f'\033[31m===采集完成===累计耗时：\033[0m', time.time() - time_1, rightnow)
