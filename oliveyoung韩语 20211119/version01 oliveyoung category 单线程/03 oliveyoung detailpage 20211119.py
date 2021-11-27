@@ -70,8 +70,8 @@ with open('./02_oliveyoung_listing03.csv', mode='r', encoding='utf-8') as f_list
         s = Service(r"D:\lark1984\selenium\chromedriver.exe")
         driver_dp = Chrome(service=s, options=opt)
 
-        sleep(3) # 等待页面加载0.5秒
-        driver_dp.get(url_dp)
+        sleep(3) # 等待页面加载3秒
+        driver_dp.get(url=url_dp)
         html_data_dp = driver_dp.page_source # 转换页面源代码
         # print(html_data)
 
@@ -106,8 +106,9 @@ with open('./02_oliveyoung_listing03.csv', mode='r', encoding='utf-8') as f_list
             bi_11 = "",
         else:
             print(f'\033[33m>>>正在采集地址：\033[0m', urls_detailpage)
-            sleep(6) # 等待页面加载3秒
+            sleep(3) # 等待页面加载3秒
             driver_dp.find_element(By.XPATH, '//*[@id="buyInfo"]/a').click() # 点击详情页下方标签页
+            sleep(8) # 等待页面加载3秒
 
             # detail page - product info
             # 产品名称
