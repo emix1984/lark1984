@@ -73,7 +73,7 @@ with open('./02_oliveyoung_listing03.csv', mode='r', encoding='utf-8') as f_list
         response = requests.get(url=url_dp, headers=headers)
         html_data_dp = response.text
         selector_dp = parsel.Selector(html_data_dp)
-        sleep(3) # 等待页面加载3秒
+        # sleep(3) # 等待页面加载3秒
         # print(html_data_dp)
 
         if "상품을 찾을 수 없습니다" in html_data_dp:
@@ -109,7 +109,7 @@ with open('./02_oliveyoung_listing03.csv', mode='r', encoding='utf-8') as f_list
             bi_13 = "",
         else:
             print(f'\033[33m>>>正在采集地址：\033[0m', urls_detailpage)
-            sleep(3) # 等待页面加载3秒
+            # sleep(1) # 等待页面加载6秒
 
             # detail page - product info
             # 产品名称
