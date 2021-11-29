@@ -38,6 +38,8 @@ csv_writer = csv.DictWriter(f, fieldnames=[
         '使用注意事项',
         '品质保证基准',
         '售后服务电话',
+        '医药外用品品名&型号',
+        '医药外用品认证许可',
         '当前网址',
         '当前时间',
 ])
@@ -104,11 +106,14 @@ with open('./02_oliveyoung_listing03.csv', mode='r', encoding='utf-8') as f_list
             bi_9 = "",
             bi_10 = "",
             bi_11 = "",
+            bi_12 = "",
+            bi_13 = "",
         else:
             print(f'\033[33m>>>正在采集地址：\033[0m', urls_detailpage)
             sleep(3) # 等待页面加载3秒
             driver_dp.find_element(By.XPATH, '//*[@id="buyInfo"]/a').click() # 点击详情页下方标签页
             sleep(8) # 等待页面加载3秒
+            html_data_dp_tab = driver_dp.page_source  # 转换页面源代码
 
             # detail page - product info
             # 产品名称
@@ -117,7 +122,7 @@ with open('./02_oliveyoung_listing03.csv', mode='r', encoding='utf-8') as f_list
             dp_img = driver_dp.find_element(By.XPATH, '//*[@id="mainImg"]').get_attribute('src')
 
             # 开始判断是否存在 price-1 标签, <strike></strike>是唯一一个price-1标签用到的html标签
-            if "strike" in html_data_dp:
+            if "strike" in html_data_dp_tab:
                     dp_price1 = driver_dp.find_element(By.XPATH, '//*[@class="price-1"]/strike').text
                     dp_price2 = driver_dp.find_element(By.XPATH, '//*[@class="price-2"]/strong').text
             else:
@@ -133,31 +138,31 @@ with open('./02_oliveyoung_listing03.csv', mode='r', encoding='utf-8') as f_list
             # <span class="icon_flag coupon">쿠폰</span>
 
             # sale세일
-            if "icon_flag sale" in html_data_dp:
+            if "icon_flag sale" in html_data_dp_tab:
                     dp_promo1 = "세일"
             else:
                     dp_promo1 = ""
 
             # 오늘드림
-            if "icon_flag delivery" in html_data_dp:
+            if "icon_flag delivery" in html_data_dp_tab:
                     dp_promo2 = "오늘드림"
             else:
                     dp_promo2 = ""
 
             # 증정
-            if "icon_flag gift" in html_data_dp:
+            if "icon_flag gift" in html_data_dp_tab:
                     dp_promo3 = "증정"
             else:
                     dp_promo3 = ""
 
             # 1+1
-            if "icon_flag plus" in html_data_dp:
+            if "icon_flag plus" in html_data_dp_tab:
                     dp_promo4 = "1+1"
             else:
                     dp_promo4 = ""
 
             # 쿠폰
-            if "icon_flag coupon" in html_data_dp:
+            if "icon_flag coupon" in html_data_dp_tab:
                     dp_promo5 = "쿠폰"
             else:
                     dp_promo5 = ""
@@ -170,29 +175,57 @@ with open('./02_oliveyoung_listing03.csv', mode='r', encoding='utf-8') as f_list
             # 상품설명 prd_detail_tab>id=productInfo
             detailpage_img = "" # 后续待处理
 
-            # 구매정보 prd_detail_tab>id=buyInfo
-            bi_1 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[1]/dd').text
-            # volume/weight
-            bi_2 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[2]/dd').text
-            # ideal for
-            bi_3 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[3]/dd').text
-            # expiration date
-            bi_4 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[4]/dd').text
-            # how to use
-            bi_5 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[5]/dd').text
-            # manufacturer/distributor
-            bi_6 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[6]/dd').text
-            # country of manufacture
-            bi_7 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[7]/dd').text
-            # ingredients
-            bi_8 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[8]/dd').text
-            # MFDS Evaluation of functional cosmetics
-            bi_9 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[9]/dd').text
-            # cautions for use
-            bi_10 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[10]/dd').text
-            # quality assurance standard
-            bi_11 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[11]/dd').text
-            # customer service
+            # 打开tab之后需要判断产品是<化妆品화장품>，还是医药外用品<의약외품>
+
+            if "의약외품" in html_data_dp_tab:
+                print("의약외품")
+                # 품명 및 모델명
+                bi_12 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[1]/dd').text
+                # 인증·허가
+                bi_13 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[2]/dd').text
+                # 제조국
+                bi_6 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[3]/dd').text
+                # 제조자
+                bi_5 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[4]/dd').text
+                # A/S 책임자 / 전화번호
+                bi_11 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[5]/dd').text
+                # 判定为医药外用品的情况，补齐产品prd_detail_tab>id=buyInfo其他的变数
+                bi_1 = ""
+                bi_2 = ""
+                bi_3 = ""
+                bi_4 = ""
+                bi_7 = ""
+                bi_8 = ""
+                bi_9 = ""
+                bi_10 = ""
+            else:
+                print("화장품")
+                # 구매정보 prd_detail_tab>id=buyInfo
+                # 용량 또는 중량 volume/weight
+                bi_1 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[1]/dd').text
+                # 제품 주요 사양 ideal for
+                bi_2 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[2]/dd').text
+                # 사용기간(개봉 후 사용기간) expiration date
+                bi_3 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[3]/dd').text
+                # 사용방법 how to use
+                bi_4 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[4]/dd').text
+                # 화장품제조업자 및 화장품책임판매업자 manufacturer/distributor
+                bi_5 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[5]/dd').text
+                # 제조국 country of manufacture
+                bi_6 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[6]/dd').text
+                # 화장품법에 따라 기재해야 하는 모든 성분 ingredients
+                bi_7 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[7]/dd').text
+                # 기능성 화장품 식품의약품안전처 심사필 여부 MFDS Evaluation of functional cosmetics
+                bi_8 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[8]/dd').text
+                # 사용시 주의사항 cautions for use
+                bi_9 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[9]/dd').text
+                # 품질보증기준 quality assurance standard
+                bi_10 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[10]/dd').text
+                # 소비자상담 전화번호 customer service
+                bi_11 = driver_dp.find_element(By.XPATH, '//*[@id="artcInfo"]/dl[11]/dd').text
+                # 医药外用品 의약외품不是的情况下补齐变数 품명 및 모델명
+                bi_12 = ""
+                bi_13 = ""
 
             # 리뷰 prd_detail_tab>id=reviewInfo
             ri_1_raw = driver_dp.find_element(By.XPATH, '//*[@id="reviewInfo"]/a/span').text
@@ -234,6 +267,8 @@ with open('./02_oliveyoung_listing03.csv', mode='r', encoding='utf-8') as f_list
                 '使用注意事项': bi_9,
                 '品质保证基准': bi_10,
                 '售后服务电话': bi_11,
+                '医药外用品品名&型号': bi_12,
+                '医药外用品认证许可': bi_13,
                 '当前网址': url_dp,
                 '当前时间': rightnow,
                 }
