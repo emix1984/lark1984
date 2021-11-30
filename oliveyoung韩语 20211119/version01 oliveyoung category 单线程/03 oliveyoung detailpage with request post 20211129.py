@@ -41,7 +41,14 @@ csv_writer = csv.DictWriter(f, fieldnames=[
         '品质保证基准',
         '售后服务电话',
         '医药外用品品名&型号',
-        '医药外用品认证许可',
+        '认证许可',
+        '进口产品KC认证有无',
+        '颜色',
+        '材质',
+        '使用年龄',
+        '同一型号产品上市日期',
+        '电压功耗',
+        '产品主要构成',
         '当前网址',
         '当前时间',
 ])
@@ -107,9 +114,16 @@ with open('./02_oliveyoung_listing03.csv', mode='r', encoding='utf-8') as f_list
             bi_11 = "",
             bi_12 = "",
             bi_13 = "",
+            bi_14 = "",
+            bi_15 = "",
+            bi_16 = "",
+            bi_17 = "",
+            bi_18 = "",
+            bi_19 = "",
+            bi_20 = "",
         else:
             print(f'\033[33m>>>正在采集地址：\033[0m', urls_detailpage)
-            # sleep(1) # 等待页面加载6秒
+            # sleep(1) # 等待页面加载1秒
 
             # detail page - product info
             # 产品名称
@@ -188,57 +202,151 @@ with open('./02_oliveyoung_listing03.csv', mode='r', encoding='utf-8') as f_list
             # bi_1 = html_data.replace(" ", "").replace("\t", "").strip()
             html_data_dp_tab = html_data_dp_tab_raw.replace("\n", "").replace("\t", "")
             # print(html_data_dp_tab)
+            selector_dp_tab = parsel.Selector(html_data_dp_tab)
+            lis_dp_tab = selector_dp_tab.xpath('//*[@class="detail_info_list"]/dt/text()').extract()
 
-            # 打开tab之后判断产品是<化妆品화장품>，还是医药外用品<의약외품>
+            # 打开tab之后判断产品是<化妆品화장품>，还是医药外用品<의약외품>,2021.11.30改成属性项目是否存在，存在就采集相关属性，不存在就留空
             # 需要增加判断 空值 链接 https://www.oliveyoung.co.kr/store/goods/getGoodsDetail.do?goodsNo=A000000141302&dispCatNo=1000001000100100002&trackingCd=Cat1000001000100100002_Small&curation&egcode&rccode&egrankcode
-            if "의약외품" in html_data_dp_tab:
-                print("의약외품")
-                # 품명 및 모델명
-                bi_12 = re.findall(f'<dt>품명 및 모델명</dt><dd>(.*?)</dd>', html_data_dp_tab)[0]
-                # 인증·허가
-                bi_13 = re.findall(f'<dt>인증·허가</dt><dd>(.*?)</dd>', html_data_dp_tab)[0]
-                # 제조국
-                bi_6 = re.findall(f'<dt>제조국</dt><dd>(.*?)</dd>', html_data_dp_tab)[0]
-                # 제조자
-                bi_5 = re.findall(f'<dt>제조자</dt><dd>(.*?)</dd>', html_data_dp_tab)[0]
-                # A/S 책임자 / 전화번호
-                bi_11 = re.findall(f'<dt>A/S 책임자 / 전화번호</dt><dd>(.*?)</dd>', html_data_dp_tab)[0]
-                # 判定为医药外用品的情况，补齐产品prd_detail_tab>id=buyInfo其他的变数
-                bi_1 = ""
-                bi_2 = ""
-                bi_3 = ""
-                bi_4 = ""
-                bi_7 = ""
-                bi_8 = ""
-                bi_9 = ""
-                bi_10 = ""
-            else:
-                print("화장품")
-                # 용량 또는 중량 volume/weight
+
+            # 용량 또는 중량 volume/weight
+            if "용량 또는 중량" in lis_dp_tab:
                 bi_1 = re.findall(f'<dt>용량 또는 중량</dt><dd>(.*?)</dd>', html_data_dp_tab)[0]
-                # 제품 주요 사양 ideal for
+            elif "크기, 무게" in lis_dp_tab:
+                # 크기, 무게 / 크기, 중량 / 용량 또는 중량 volume/weight
+                bi_1 = re.findall(f'<dt>크기, 무게</dt><dd>(.*?)</dd>', html_data_dp_tab)[0]
+            elif "크기, 중량" in lis_dp_tab:
+                # 크기, 중량 / 용량 또는 중량 volume/weight
+                bi_1 = re.findall(f'<dt>크기, 중량</dt><dd>(.*?)</dd>', html_data_dp_tab)[0]
+            else:
+                bi_1 = ""
+
+            # 제품 주요 사양 ideal for
+            if "제품 주요 사양" in lis_dp_tab:
                 bi_2 = re.findall(f'<dt>제품 주요 사양</dt><dd>(.*?)</dd>', html_data_dp_tab)[0]
-                # 사용기간(개봉 후 사용기간) expiration date
+            else:
+                bi_2 = ""
+            # 사용기간(개봉 후 사용기간) expiration date
+            if "사용기간(개봉 후 사용기간)" in lis_dp_tab:
                 bi_3 = re.findall(f'<dt>사용기간\(개봉 후 사용기간\)</dt><dd>(.*?)</dd>', html_data_dp_tab)[0]
-                # 사용방법 how to use
+            else:
+                bi_3 = ""
+
+            # 사용방법 how to use
+            if "제품의 사용목적 및 사용방법" in lis_dp_tab:
+                bi_4 = re.findall(f'<dt>제품의 사용목적 및 사용방법</dt><dd>(.*?)</dd>', html_data_dp_tab)[0]
+            elif "사용방법" in lis_dp_tab:
                 bi_4 = re.findall(f'<dt>사용방법</dt><dd>(.*?)</dd>', html_data_dp_tab)[0]
-                # 화장품제조업자 및 화장품책임판매업자 manufacturer/distributor
+            else:
+                bi_4 = ""
+
+            # 화장품제조업자 및 화장품책임판매업자 manufacturer/distributor
+            if "화장품제조업자 및 화장품책임판매업자" in lis_dp_tab:
                 bi_5 = re.findall(f'<dt>화장품제조업자 및 화장품책임판매업자</dt><dd>(.*?)</dd>', html_data_dp_tab)[0]
-                # 제조국 country of manufacture
+            elif "화장품제조업자 및 화장품책임판매업자" in lis_dp_tab:
+                # 제조자 / 화장품제조업자 및 화장품책임판매업자 manufacturer/distributor
+                bi_5 = re.findall(f'<dt>제조자</dt><dd>(.*?)</dd>', html_data_dp_tab)[0]
+            else:
+                bi_5 = ""
+
+            # 제조국 country of manufacture
+            if "제조국" in lis_dp_tab:
                 bi_6 = re.findall(f'<dt>제조국</dt><dd>(.*?)</dd>', html_data_dp_tab)[0]
-                # 화장품법에 따라 기재해야 하는 모든 성분 ingredients
+            else:
+                bi_6 = ""
+
+            # 화장품법에 따라 기재해야 하는 모든 성분 ingredients
+            if "화장품법에 따라 기재해야 하는 모든 성분" in lis_dp_tab:
                 bi_7 = re.findall(f'<dt>화장품법에 따라 기재해야 하는 모든 성분</dt><dd>(.*?)</dd>', html_data_dp_tab)[0]
-                # 기능성 화장품 식품의약품안전처 심사필 여부 MFDS Evaluation of functional cosmetics
+            else:
+                bi_7 = ""
+
+            # 기능성 화장품 식품의약품안전처 심사필 여부 MFDS Evaluation of functional cosmetics
+            if "기능성 화장품 식품의약품안전처 심사필 여부" in lis_dp_tab:
                 bi_8 = re.findall(f'<dt>기능성 화장품 식품의약품안전처 심사필 여부</dt><dd>(.*?)</dd>', html_data_dp_tab)[0]
-                # 사용시 주의사항 cautions for use
+            else:
+                bi_8 = ""
+
+            # 사용시 주의사항 cautions for use
+            if "사용시 주의사항" in lis_dp_tab:
                 bi_9 = re.findall(f'<dt>사용시 주의사항</dt><dd>(.*?)</dd>', html_data_dp_tab)[0]
-                # 품질보증기준 quality assurance standard
+            elif "취급방법 및 주의사항" in lis_dp_tab:
+                # 취급방법 및 주의사항 / 사용시 주의사항 cautions for use
+                bi_9 = re.findall(f'<dt>취급방법 및 주의사항</dt><dd>(.*?)</dd>', html_data_dp_tab)[0]
+            else:
+                bi_9 = ""
+
+            # 품질보증기준 quality assurance standard
+            if "품질보증기준" in lis_dp_tab:
                 bi_10 = re.findall(f'<dt>품질보증기준</dt><dd>(.*?)</dd>', html_data_dp_tab)[0]
-                # 소비자상담 전화번호 customer service
+            else:
+                bi_10 = ""
+
+            # 소비자상담 전화번호 customer service
+            if "소비자상담 전화번호" in lis_dp_tab:
                 bi_11 = re.findall(f'<dt>소비자상담 전화번호</dt><dd>(.*?)</dd>', html_data_dp_tab)[0]
-                # 医药外用品 의약외품不是的情况下补齐变数 품명 및 모델명
+            elif "A/S 책임자 / 전화번호" in lis_dp_tab:
+                # A/S 책임자 / 전화번호 / 소비자상담 전화번호 customer service
+                bi_11 = re.findall(f'<dt>A/S 책임자 / 전화번호</dt><dd>(.*?)</dd>', html_data_dp_tab)[0]
+            else:
+                bi_11 = ""
+
+            # 以下bi_12开始，非化妆品类产品追加属性变数
+            # 품명 및 모델명
+            if "품명 및 모델명" in lis_dp_tab:
+                bi_12 = re.findall(f'<dt>품명 및 모델명</dt><dd>(.*?)</dd>', html_data_dp_tab)[0]
+            else:
                 bi_12 = ""
+
+            # 인증·허가
+            if "인증·허가" in lis_dp_tab:
+                bi_13 = re.findall(f'<dt>인증·허가</dt><dd>(.*?)</dd>', html_data_dp_tab)[0]
+            else:
                 bi_13 = ""
+
+            # KC 인증 필 유무
+            if "KC 인증 필 유무" in lis_dp_tab:
+                bi_14 = re.findall(f'<dt>KC 인증 필 유무</dt><dd>(.*?)</dd>', html_data_dp_tab)[0]
+            else:
+                bi_14 = ""
+
+            # 색상
+            if "색상" in lis_dp_tab:
+                bi_15 = re.findall(f'<dt>색상</dt><dd>(.*?)</dd>', html_data_dp_tab)[0]
+            else:
+                bi_15 = ""
+
+            # 재질
+            if "재질" in lis_dp_tab:
+                bi_16 = re.findall(f'<dt>재질</dt><dd>(.*?)</dd>', html_data_dp_tab)[0]
+            else:
+                bi_16 = ""
+
+            # 사용연령(체중범위)
+            if "사용연령(체중범위)" in lis_dp_tab:
+                bi_17 = re.findall(f'<dt>사용연령\(체중범위\)</dt><dd>(.*?)</dd>', html_data_dp_tab)[0]
+            else:
+                bi_17 = ""
+
+            # 동일 모델 출시년월
+            if "동일 모델 출시년월" in lis_dp_tab:
+                bi_18 = re.findall(f'<dt>동일 모델 출시년월</dt><dd>(.*?)</dd>', html_data_dp_tab)[0]
+            else:
+                bi_18 = ""
+
+            # 정격전압, 소비전력
+            if "정격전압, 소비전력" in lis_dp_tab:
+                bi_19 = re.findall(f'<dt>정격전압, 소비전력</dt><dd>(.*?)</dd>', html_data_dp_tab)[0]
+            else:
+                bi_19 = ""
+
+            # 주요 사양 剃须刀产品主要构成
+            if "제품 주요 사양" in lis_dp_tab:
+                bi_20 = re.findall(f'<dt>제품 주요 사양</dt><dd>(.*?)</dd>', html_data_dp_tab)[0]
+            elif "주요 사양" in lis_dp_tab:
+                bi_20 = re.findall(f'<dt>주요 사양</dt><dd>(.*?)</dd>', html_data_dp_tab)[0]
+            else:
+                bi_20 = ""
+
 
             # 리뷰 prd_detail_tab>id=reviewInfo
             ri_1_raw = selector_dp.xpath('//*[@id="reviewInfo"]/a/span/text()').extract()[0]
@@ -281,7 +389,14 @@ with open('./02_oliveyoung_listing03.csv', mode='r', encoding='utf-8') as f_list
                 '品质保证基准': bi_10,
                 '售后服务电话': bi_11,
                 '医药外用品品名&型号': bi_12,
-                '医药外用品认证许可': bi_13,
+                '认证许可': bi_13,
+                '进口产品KC认证有无': bi_14,
+                '颜色': bi_15,
+                '材质': bi_16,
+                '使用年龄': bi_17,
+                '同一型号产品上市日期': bi_18,
+                '电压功耗': bi_19,
+                '产品主要构成': bi_20,
                 '当前网址': url_dp,
                 '当前时间': rightnow,
                 }
