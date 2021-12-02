@@ -35,7 +35,8 @@ time_1 = time.time()
 # 配置oliveyoung主页地址，浏览器基础信息
 url = f'https://www.oliveyoung.co.kr/store/main/main.do?oy=0'
 headers = {
-    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.99 Safari/537.36'
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.99 Safari/537.36',
+    'Connection': 'close'
 }
 # 发送请求
 response = requests.get(url=url, headers=headers)
@@ -47,7 +48,7 @@ category1_names = selector.xpath('//*[@id="gnbAllMenu"]/ul/li[1]/div/p/a/text()'
 category1_codes = selector.xpath('//*[@id="gnbAllMenu"]/ul/li[1]/div/p/a[@data-ref-dispcatno]/@data-ref-dispcatno').getall()
 
 # 获取二级分类名称和编码
-for category1_name, category1_code in zip(category1_names, category1_codes):
+for category1_name, category1_code in category1_names, category1_codes:
     category2_names = selector.xpath('//*[@id="gnbAllMenu"]/ul/li[1]/div/ul/li/a/text()').getall()
     category2_codes = selector.xpath('//*[@id="gnbAllMenu"]/ul/li[1]/div/ul/li/a[@data-ref-dispcatno]/@data-ref-dispcatno').getall()
     # 拼合二级分类网页网址，打开网址并获得三级分类名称和编码
