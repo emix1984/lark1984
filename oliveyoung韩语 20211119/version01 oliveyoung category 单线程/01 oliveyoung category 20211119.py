@@ -65,7 +65,7 @@ for category1_name, category1_code in zip(category1_names, category1_codes):
         category3_codes = selector_category2.xpath('//*[@id="Contents"]/ul[1]/li/a[@class]/@class').getall()
 
         # 拼合三级分类的地址，获得分类下的产品数量以及按照每页48个产品的展示下有多少页
-        for category3_name, category3_code in zip(category3_names,category3_codes):
+        for category3_name, category3_code in zip(category3_names, category3_codes):
             category3_url = oliveyoung_homepage_url+category3_code
             response_category3 = requests.get(url=category3_url, headers=headers)
             html_data_category3 = response_category3.text
