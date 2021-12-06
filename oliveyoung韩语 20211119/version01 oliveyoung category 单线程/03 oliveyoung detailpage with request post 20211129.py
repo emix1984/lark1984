@@ -260,7 +260,7 @@ for url_dp in urls_detailpage:
                 bi_5_1_raw = re.findall(r"제조.*:(.*)", bi_5, re.S)[0]
                 bi_5_1 = "".join(bi_5_1_raw).strip()
                 bi_5_2_raw = re.findall(r"판매.*:(.*)", bi_5, re.S)[0]
-                bi_5_2 = "".join(bi_5_1_raw_raw).strip()
+                bi_5_2 = "".join(bi_5_2_raw).strip()
             else:
                 bi_5_1 = bi_5_2 = bi_5
         elif "제조자" in lis_dp_tab:
@@ -286,7 +286,8 @@ for url_dp in urls_detailpage:
                 bi_5_1 = bi_5_2 = bi_5
         else:
             bi_5 = ""
-            bi_5_1 = bi_5_2 = bi_5
+            bi_5_1 = ""
+            bi_5_2 = ""
 
         # 제조국 country of manufacture
         if "제조국" in lis_dp_tab:
