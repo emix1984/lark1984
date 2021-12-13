@@ -41,7 +41,8 @@ prod_attr_item = selector_detailpage.xpath('//*[@class="prod-description"]/ul/li
 # print(prod_attr_item)
 print(prod_buy_header_title, reviews_count,discount_rate,origin_price,prod_sale_price,unit_price,)
 
-
+## 通过构建下面的产品属性链接解决采集属性标签的问题
+## https://www.coupang.com/vp/products/344529480/items/148293960/vendoritems/3335127002
 ## tab-titles
 # product-item__table
 prod_attr_info = selector_detailpage.xpath('//*[@id="itemBrief"]/div/table/tbody/tr[1]/td[2]/text()').get()
