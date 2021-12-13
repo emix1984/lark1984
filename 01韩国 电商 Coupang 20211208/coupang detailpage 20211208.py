@@ -45,17 +45,18 @@ print(prod_buy_header_title, reviews_count,discount_rate,origin_price,prod_sale_
 ## https://www.coupang.com/vp/products/344529480/items/148293960/vendoritems/3335127002
 ## tab-titles
 # product-item__table
-prod_attr_info = selector_detailpage.xpath('//*[@id="itemBrief"]/div/table/tbody/tr[1]/td[2]/text()').get()
-response_raw = get_response(url_detailpage)\
-response = response_raw.strip()
-print(response)
-prod_attr_info1 = re.findall(f'<th>용량\(중량\)</th><td>(.*?)</td>', response, re.S)[0]
+prod_attr_info = selector_detailpage.xpath('//*[@id="btfTab"]/ul[2]/li[4]/div/table/tbody/tr/td/text()').get()
 print('product-item__table')
-print(prod_attr_info1)
+print(prod_attr_info)
 
 ## 产品销售者信息 product-item__table product-seller
 product_seller = selector_detailpage.xpath('//*[@id="itemBrief"]/div/table/tbody/tr[3]/td[1]/text()').get()
 print('产品销售者信息 product-item__table product-seller')
 print(product_seller)
 
-##
+## 产品review_tab请求链接
+## https://www.coupang.com/vp/product/reviews?productId=344529480&page=1&size=5&sortBy=ORDER_SCORE_ASC&ratings=&q=&viRoleCode=3&ratingSummary=true
+
+## 销售公司信息
+## 与产品属性的tab在同一个json里
+## https://www.coupang.com/vp/products/5735830650/items/9639246678/vendoritems/76923492094
