@@ -40,7 +40,7 @@ def get_selector(html_url):
     return selector
 def open_csv_data():
     # 创建csv文件和表头
-    f = open('.\\02_oliveyoung_listing.csv', mode='a', encoding='utf-8', newline='')
+    f = open('02_oliveyoung_listing.csv', mode='a', encoding='utf-8', newline='')
     csv_writer = csv.DictWriter(f, fieldnames=[
     '三级类目名称',
     '三级类目编码',
