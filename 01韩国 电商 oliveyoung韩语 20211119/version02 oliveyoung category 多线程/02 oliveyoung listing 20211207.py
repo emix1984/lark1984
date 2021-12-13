@@ -59,7 +59,7 @@ def open_csv_data():
     rightnow = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
 
-def parse_data(category2_names, category2_codes):
+def parse_data():
     for category2_name, category2_code in zip(category2_names,category2_codes):
         url_category_2 = f'https://www.oliveyoung.co.kr/store/display/getMCategoryList.do?dispCatNo={category2_code}&isLoginCnt=1&aShowCnt=0&bShowCnt=0&cShowCnt=0&gateCd=Drawer&trackingCd=Cat{category2_code}_MID'
 
@@ -118,29 +118,24 @@ def parse_data(category2_names, category2_codes):
             print(f'===采集完成===累计耗时：', time.time() - time_1, rightnow)
 
 #
-def run():
+def run(url):
+    open_csv_data()
     # 配置oliveyoung主页地址，浏览器基础信息
-    url_start = f'https://www.oliveyoung.co.kr/store/company/brandStory.do'
+    url_start = url
     selector_start = get_selector(url_start)
     # 解析html代码，获取主要分类名称和编码
     category2_names = selector_start.xpath('//*[@id="gnbAllMenu"]/ul/li[1]/div/ul/li/a/text()').getall()
     category2_codes = selector_start.xpath(
         '//*[@id="gnbAllMenu"]/ul/li[1]/div/ul/li/a[@data-ref-dispcatno]/@data-ref-dispcatno').getall()
-    parse_data(category2_names, category2_codes)
+    parse_data()
 
 #
-# # time_1 = time.time()
-# # for page in range(1,11):
-# #     run(f'https://www.fabiaoqing.com/biaoqing/lists/page/{page}.html')
-# # print(f'总耗时，{time.time() - time_1}')
-#
-# if __name__ == '__main__':
-#     time_1 = time.time()
-#     # concurrent.futures模块提供了两种executor的子类，ThreadPoolExecutor各自独立操作一个线程和 ProcessPoolExecutor一个进程池
-#     exe = concurrent.futures.ThreadPoolExecutor(max_workers=10)
-#     # exe = concurrent.futures.ProcessPoolExecutor(max_workers=10)
-#     for page in range(1, 11):
-#         url = f'https://www.fabiaoqing.com/biaoqing/lists/page/{page}.html'
-#         exe.submit(run, url)
-#     exe.shutdown()
-#     print(f'总耗时:{time.time()-time_1}')
+if __name__ == '__main__':
+    time_1 = time.time()
+    # concurrent.futures模块提供了两种executor的子类，ThreadPoolExecutor各自独立操作一个线程和 ProcessPoolExecutor一个进程池
+    exe = concurrent.futures.ThreadPoolExecutor(max_workers=10)
+    # exe = concurrent.futures.ProcessPoolExecutor(max_workers=10)
+    url = f'https://www.oliveyoung.co.kr/store/company/brandStory.do'
+    exe.submit(run, url)
+    exe.shutdown()
+    print(f'总耗时:{time.time()-time_1}')

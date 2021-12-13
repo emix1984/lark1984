@@ -61,7 +61,7 @@ csv_writer.writeheader()
 print(f'\033[32m>>> csv文件<表头>写入完毕 <<<\033[0m')
 
 # pandas 拉取 listing.csv数据中的产品详情页链接
-df_listing = pd.read_csv('02_oliveyoung_listing.csv')
+df_listing = pd.read_csv('02_oliveyoung_listing 20211213.csv')
 data01 = pd.DataFrame(df_listing)
 print(f'\033[32m>>>读取listing.csv文件，进行去重操作中<<<\033[0m', '读取数据条目共计： ', len(data01), '条')
 data02 = data01.drop_duplicates("产品链接") # 去除重复链接

@@ -1,3 +1,4 @@
+import pprint
 from time import sleep
 import requests
 import parsel
@@ -38,17 +39,21 @@ unit_price = selector_detailpage.xpath('//*[@id="contents"]/div[1]/div/div[3]/di
 # prod-description-attribute
 prod_attr_item = selector_detailpage.xpath('//*[@class="prod-description"]/ul/li/text()').get()
 # print(prod_attr_item)
-print(prod_buy_header_title,reviews_count,discount_rate,origin_price,prod_sale_price,unit_price,)
+print(prod_buy_header_title, reviews_count,discount_rate,origin_price,prod_sale_price,unit_price,)
 
 
 ## tab-titles
 # product-item__table
-prod_attr_info = selector_detailpage.xpath('//*[@id="itemBrief"]/div/table/tbody/tr[1]/td[2]').get()
+prod_attr_info = selector_detailpage.xpath('//*[@id="itemBrief"]/div/table/tbody/tr[1]/td[2]/text()').get()
+response_raw = get_response(url_detailpage)\
+response = response_raw.strip()
+print(response)
+prod_attr_info1 = re.findall(f'<th>용량\(중량\)</th><td>(.*?)</td>', response, re.S)[0]
 print('product-item__table')
-print(prod_attr_info)
+print(prod_attr_info1)
 
 ## 产品销售者信息 product-item__table product-seller
-product_seller = selector_detailpage.xpath('/html/body/div[2]/section/div[2]/div[10]/ul[2]/li[4]/div/table/tbody/tr/td').extract()
+product_seller = selector_detailpage.xpath('//*[@id="itemBrief"]/div/table/tbody/tr[3]/td[1]/text()').get()
 print('产品销售者信息 product-item__table product-seller')
 print(product_seller)
 

@@ -23,9 +23,10 @@ import parsel
 import csv
 import re
 import time
+import concurrent.futures
 
 # 创建csv文件和表头
-f = open('.\\02_oliveyoung_listing.csv', mode='a', encoding='utf-8', newline='')
+f = open('02_oliveyoung_listing.csv', mode='a', encoding='utf-8', newline='')
 csv_writer = csv.DictWriter(f, fieldnames=[
 '三级类目名称',
 '三级类目编码',
@@ -84,6 +85,8 @@ for category2_name, category2_code in zip(category2_names,category2_codes):
         number = number_raw.strip()
         page_number = int(int(number) / 48) + 1
         # print(category2_name, category3_name, category3_code, number, page_number)
+        exe = concurrent.futures.ThreadPoolExecutor(max_workers=10)
+        # exe = concurrent.futures.ProcessPoolExecutor(max_workers=10)
 
         for page in range(1, page_number+1): # 因为range函数计算的是区间，开始的数字是1，所以计算出来的页码+1
             print(f'==================正在爬取', category2_name, category3_name, f'第{page}页内容=======================')
@@ -126,4 +129,5 @@ for category2_name, category2_code in zip(category2_names,category2_codes):
                 }
                 print(rightnow, '....正在采集：', category2_name, category3_name,page)
                 csv_writer.writerow(dict)
+            exe.shutdown()
         print(f'===采集完成===累计耗时：', time.time() - time_1, rightnow)
