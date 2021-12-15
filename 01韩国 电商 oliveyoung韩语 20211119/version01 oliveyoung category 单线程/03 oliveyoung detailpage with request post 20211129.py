@@ -11,10 +11,10 @@ n = 0 # 计数初始化
 # 项目计时用
 time_start = time.time()
 # 设置随机间歇时间
-time_sleep = random.random()*6
+# time_sleep = random.random()*6
 
 # 创建csv文件和表头
-f = open('03_oliveyoung_detailpage_data20211131.csv', mode='a', encoding='utf-8', newline='')
+f = open('03_oliveyoung_detailpage_data.csv', mode='a', encoding='utf-8', newline='')
 print(f'\033[32m>>>创建csv文件完毕！！！<<<\033[0m')
 csv_writer = csv.DictWriter(f, fieldnames=[
         '产品编码',
@@ -57,11 +57,11 @@ csv_writer = csv.DictWriter(f, fieldnames=[
         '当前网址',
         '当前时间',
 ])
-csv_writer.writeheader()
-print(f'\033[32m>>> csv文件<表头>写入完毕 <<<\033[0m')
+# csv_writer.writeheader()
+# print(f'\033[32m>>> csv文件<表头>写入完毕 <<<\033[0m')
 
 # pandas 拉取 listing.csv数据中的产品详情页链接
-df_listing = pd.read_csv('02_oliveyoung_listing 20211213.csv')
+df_listing = pd.read_csv('02_oliveyoung_listing04.csv')
 data01 = pd.DataFrame(df_listing)
 print(f'\033[32m>>>读取listing.csv文件，进行去重操作中<<<\033[0m', '读取数据条目共计： ', len(data01), '条')
 data02 = data01.drop_duplicates("产品链接") # 去除重复链接
@@ -78,7 +78,7 @@ for url_dp in urls_detailpage:
     response = requests.get(url=url_dp, headers=headers, timeout=timeout)
     html_data_dp = response.text
     selector_dp = parsel.Selector(html_data_dp)
-    sleep(time_sleep) # 等待页面加载3秒
+    # sleep(time_sleep) # 等待页面加载3秒
     # print(html_data_dp)
 
     if "상품을 찾을 수 없습니다" in html_data_dp:
@@ -121,7 +121,7 @@ for url_dp in urls_detailpage:
         bi_20 = "",
     else:
         print(f'\033[00;42m>>>正在采集第{n}条数据\033[0m 地址：', url_dp)
-        sleep(time_sleep) # 等待页面加载1秒
+        # sleep(time_sleep) # 等待页面加载1秒
 
         # detail page - product info
         # 产品名称
@@ -257,10 +257,23 @@ for url_dp in urls_detailpage:
                 else:
                     bi_5_2 = "".join(bi_5_2_raw).strip()
             elif ":" in bi_5:
-                bi_5_1_raw = re.findall(r"제조.*:(.*)", bi_5, re.S)[0]
-                bi_5_1 = "".join(bi_5_1_raw).strip()
-                bi_5_2_raw = re.findall(r"판매.*:(.*)", bi_5, re.S)[0]
-                bi_5_2 = "".join(bi_5_2_raw).strip()
+                if "제조" in bi_5:
+                    bi_5_1_raw = re.findall(r"제조.*:(.*)", bi_5, re.S)[0]
+                    bi_5_1 = "".join(bi_5_1_raw).strip()
+                else:
+                    bi_5_1 = ""
+
+                if "제조판매업자ㅣ" in bi_5:
+                    bi_5_2_raw = re.findall(r"판매.*ㅣ(.*)", bi_5, re.S)[0]
+                    bi_5_2 = "".join(bi_5_2_raw).strip()
+                elif "제조판매업자 (주)" in bi_5:
+                    bi_5_2_raw = re.findall(r"제조판매업자 \(주\)(.*)", bi_5, re.S)[0]
+                    bi_5_2 = "".join(bi_5_2_raw).strip()
+                elif "판매" in bi_5:
+                    bi_5_2_raw = re.findall(r"판매.*:(.*)", bi_5, re.S)[0]
+                    bi_5_2 = "".join(bi_5_2_raw).strip()
+                else:
+                    bi_5_2 = ""
             else:
                 bi_5_1 = bi_5_2 = bi_5
         elif "제조자" in lis_dp_tab:
