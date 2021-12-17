@@ -14,7 +14,7 @@ import re
 import time
 
 # 创建csv文件和表头
-f = open('../01_oliveyoung_category.csv', mode='a', encoding='utf-8', newline='')
+f = open('01_oliveyoung_category.csv', mode='a', encoding='utf-8', newline='')
 csv_writer = csv.DictWriter(f, fieldnames=[
             '一级分类名称',
             '一级分类编码',
@@ -35,7 +35,7 @@ time_1 = time.time()
 # 配置oliveyoung主页地址，浏览器基础信息
 url = f'https://www.oliveyoung.co.kr/store/main/main.do?oy=0'
 headers = {
-    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.99 Safari/537.36',
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.113 Safari/537.36',
     'Connection': 'close'
 }
 # 发送请求
@@ -46,16 +46,27 @@ html_data = response.text
 selector = parsel.Selector(html_data)
 category1_names = selector.xpath('//*[@id="gnbAllMenu"]/ul/li[1]/div/p/a/text()').getall()
 category1_codes = selector.xpath('//*[@id="gnbAllMenu"]/ul/li[1]/div/p/a[@data-ref-dispcatno]/@data-ref-dispcatno').getall()
+# print(category1_names, category1_codes)
 
 # 获取二级分类名称和编码
-for category1_name, category1_code in category1_names, category1_codes:
-    category2_names = selector.xpath('//*[@id="gnbAllMenu"]/ul/li[1]/div/ul/li/a/text()').getall()
-    category2_codes = selector.xpath('//*[@id="gnbAllMenu"]/ul/li[1]/div/ul/li/a[@data-ref-dispcatno]/@data-ref-dispcatno').getall()
-    # 拼合二级分类网页网址，打开网址并获得三级分类名称和编码
-    for category2_name, category2_code in zip(category2_names, category2_codes):
+for category1_name, category1_code in zip(category1_names, category1_codes):
+    print(category1_name, category1_code)
+    category1_url = f"https://www.oliveyoung.co.kr/store/display/getCategoryShop.do?dispCatNo={category1_code}&gateCd=Drawer"
+    print(category1_url)
+    # 发送一级级分类地址请求，解析html代码，获得三级分类名称和编码
+    response_category1 = requests.get(url=category1_url, headers=headers)
+    html_data_category1 = response_category1.text
+
+    # 解析html代码，获取主要分类名称和编码
+    selector_category1 = parsel.Selector(html_data_category1)
+    category2_names = selector_category1.xpath('//*[@id="Contents"]/div/div[1]/ul/li/a/span/text()').getall()
+    category2_codes = selector_category1.xpath('//*[@id="Contents"]/div/div[1]/ul/li/a[@class]/@class').getall()
+    # print(category2_names, category2_codes)
+
+    for category2_name,category2_code in zip(category2_names,category2_codes):
+        # 拼合二级分类网页网址，打开网址并获得三级分类名称和编码
         # print(category1_name, category1_code, category2_name, category2_code) # 打印显示一级分类和二级分类的名称和code组合
-        oliveyoung_homepage_url = "https://www.oliveyoung.co.kr/store/display/getMCategoryList.do?dispCatNo="
-        category2_url = oliveyoung_homepage_url+category2_code
+        category2_url = f"https://www.oliveyoung.co.kr/store/display/getMCategoryList.do?dispCatNo={category2_code}&isLoginCnt=0&aShowCnt=0&bShowCnt=0&cShowCnt=0&trackingCd=Cat{category2_code}_MID"
         # print(category2_url)
 
         # 发送二级分类地址请求，解析html代码，获得三级分类名称和编码
@@ -67,7 +78,7 @@ for category1_name, category1_code in category1_names, category1_codes:
 
         # 拼合三级分类的地址，获得分类下的产品数量以及按照每页48个产品的展示下有多少页
         for category3_name, category3_code in zip(category3_names, category3_codes):
-            category3_url = oliveyoung_homepage_url+category3_code
+            category3_url = f'https://www.oliveyoung.co.kr/store/display/getMCategoryList.do?dispCatNo={category3_code}&fltDispCatNo=&prdSort=01&pageIdx=1&rowsPerPage=24&searchTypeSort=btn_thumb&plusButtonFlag=N&isLoginCnt=0&aShowCnt=0&bShowCnt=0&cShowCnt=0&trackingCd=Cat{category3_code}_Small'
             response_category3 = requests.get(url=category3_url, headers=headers)
             html_data_category3 = response_category3.text
             number_raw = re.findall('<span>(.*?)</span>', html_data_category3, re.S)[11]
@@ -77,7 +88,6 @@ for category1_name, category1_code in category1_names, category1_codes:
 
             # 时间戳
             rightnow = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-
 
             # 建立字典存储到文件
             dict = {
@@ -94,4 +104,4 @@ for category1_name, category1_code in category1_names, category1_codes:
                     }
             print(rightnow, '....正在采集：', category1_name, category2_name, category3_name)
             csv_writer.writerow(dict)
-            print(f'★★★采集完成★★★ 累计耗时：，{time.time() - time_1}')
+    print(f'★★★采集完成★★★ 累计耗时：，{time.time() - time_1}')
