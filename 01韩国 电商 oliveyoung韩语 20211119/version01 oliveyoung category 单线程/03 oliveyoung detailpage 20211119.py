@@ -8,7 +8,7 @@ import csv
 
 
 # 创建csv文件和表头
-f = open('03_oliveyoung_detailpage_data.csv', mode='a', encoding='utf-8', newline='')
+f = open('00 datawarehouse/03_oliveyoung_detailpage_data.csv', mode='a', encoding='utf-8', newline='')
 print(f'\033[32m>>>创建csv文件完毕！！！<<<\033[0m')
 csv_writer = csv.DictWriter(f, fieldnames=[
         '产品编码',

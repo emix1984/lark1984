@@ -10,6 +10,34 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\oliveyoung韩语 20211119\03 oliveyoung detailpage\oliveyoung detailpage data.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\oliveyoung韩语 20211119\03 oliveyoung detailpage\oliveyoung_listing.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\oliveyoung韩语 20211119\version01 oliveyoung category 单线程\02_oliveyoung_listing.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\oliveyoung韩语 20211119\version02 oliveyoung category 多线程\02_oliveyoung_listing.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\youtube python\20211001 从零爬取某知名招聘网站\51job_data.csv">
           <value>
             <Attribute>

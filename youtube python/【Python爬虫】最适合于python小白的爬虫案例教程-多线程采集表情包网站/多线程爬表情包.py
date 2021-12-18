@@ -35,7 +35,7 @@ def run(html_url):
         img_name = img_url[-3:]
         if len(new_title) > 50:
             new_title = new_title[:10]
-        save(new_title, img_name, img_url)
+        # save(new_title, img_name, img_url)
 
 # time_1 = time.time()
 # for page in range(1,11):
@@ -47,8 +47,10 @@ if __name__ == '__main__':
     # concurrent.futures模块提供了两种executor的子类，ThreadPoolExecutor各自独立操作一个线程和 ProcessPoolExecutor一个进程池
     exe = concurrent.futures.ThreadPoolExecutor(max_workers=10)
     # exe = concurrent.futures.ProcessPoolExecutor(max_workers=10)
-    for page in range(1, 11):
+    for page in range(1, 51):
         url = f'https://www.fabiaoqing.com/biaoqing/lists/page/{page}.html'
+        print(url)
         exe.submit(run, url)
+        exe.su
     exe.shutdown()
     print(f'总耗时:{time.time()-time_1}')

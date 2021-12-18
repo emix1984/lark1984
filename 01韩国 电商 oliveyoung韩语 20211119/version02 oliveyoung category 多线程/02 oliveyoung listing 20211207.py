@@ -58,9 +58,24 @@ def open_csv_data():
     # 时间戳
     rightnow = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
 
+def save_csv_data():
+    # 建立字典存储到文件
+    dict = {
+        '三级类目名称': category3_name,
+        '三级类目编码': category3_code,
+        '三级类目产品数': number,
+        '页码': page_number,
+        '产品编码': prd_name_number,
+        '产品链接': d_url,
+        '采集时间': rightnow,
+    }
+    print(rightnow, '....正在采集：', category2_name, category3_name, page, "/", page_number)
+    csv_writer.writerow(dict)
+    # 保存数据
 
-def parse_data():
-    for category2_name, category2_code in zip(category2_names,category2_codes):
+
+def parse_data(zip_data_category2):
+    for category2_name, category2_code in zip_data_category2:
         url_category_2 = f'https://www.oliveyoung.co.kr/store/display/getMCategoryList.do?dispCatNo={category2_code}&isLoginCnt=1&aShowCnt=0&bShowCnt=0&cShowCnt=0&gateCd=Drawer&trackingCd=Cat{category2_code}_MID'
 
         # 发送请求
@@ -79,63 +94,52 @@ def parse_data():
             number = number_raw.strip()
             page_number = int(int(number) / 48) + 1
             # print(category2_name, category3_name, category3_code, number, page_number)
+            return page_number
 
-            for page in range(1, page_number+1): # 因为range函数计算的是区间，开始的数字是1，所以计算出来的页码+1
-                print(f'==================正在爬取', category2_name, category3_name, f'第{page}页内容=======================')
-                prdSort = "3" # 产品列表按照01人气排序；02最新登录排序；03按照销量排序；04按照最低价格排序；05按照最高价格排序
-                rowsPerPage = "48" # 每页显示产品数 24, 36, 48
-                url = f'https://www.oliveyoung.co.kr/store/display/getMCategoryList.do?dispCatNo={category3_code}&fltDispCatNo=&prdSort={prdSort}&pageIdx={page}&rowsPerPage={rowsPerPage}&searchTypeSort=btn_thumb&plusButtonFlag=N&isLoginCnt=1&aShowCnt=0&bShowCnt=0&cShowCnt=0&trackingCd=Cat{category3_code}_Small'
-                # sleep(3)  # 等待页面加载3秒
-                html_data = get_response(url)
-                # print(html_data)
+def open_category_product_list(page_number):
+    # 循环翻页
+    for page in range(1, page_number + 1):  # 因为range函数计算的是区间，开始的数字是1，所以计算出来的页码+1
+        print(f'==================正在爬取', category2_name, category3_name, f'第{page}页内容=======================')
+        prdSort = "3"  # 产品列表按照01人气排序；02最新登录排序；03按照销量排序；04按照最低价格排序；05按照最高价格排序
+        rowsPerPage = "48"  # 每页显示产品数 24, 36, 48
+        url = f'https://www.oliveyoung.co.kr/store/display/getMCategoryList.do?dispCatNo={category3_code}&fltDispCatNo=&prdSort={prdSort}&pageIdx={page}&rowsPerPage={rowsPerPage}&searchTypeSort=btn_thumb&plusButtonFlag=N&isLoginCnt=1&aShowCnt=0&bShowCnt=0&cShowCnt=0&trackingCd=Cat{category3_code}_Small'
+        # sleep(3)  # 等待页面加载3秒
+        html_data = get_response(url)
+        # print(html_data)
 
-                urls = re.findall('<div class="prd_info "><a href="(.*?)"', html_data)
+        urls = re.findall('<div class="prd_info "><a href="(.*?)"', html_data)
 
-                # 采集到的三级分类category，和category3进行比对是否存在错，确认用
-                category_raw = re.findall('<p class="cate_info_tx">(.*?) .*?', html_data, re.S)[0]
-                category = category_raw.strip()
+        # 采集到的三级分类category，和category3进行比对是否存在错，确认用
+        category_raw = re.findall('<p class="cate_info_tx">(.*?) .*?', html_data, re.S)[0]
+        category = category_raw.strip()
 
-                # 采集到的三级分类下产品数量
-                number_raw = re.findall('<span>(.*?)</span>', html_data, re.S)[11]
-                number = number_raw.strip()
+        # 采集到的三级分类下产品数量
+        number_raw = re.findall('<span>(.*?)</span>', html_data, re.S)[11]
+        number = number_raw.strip()
 
-                for d_url in urls:
-                    prd_name_number = re.findall(r'goodsNo=(.*?)&', d_url)[0]
-                    print(category, page_number, number, prd_name_number)
-
-                    # 建立字典存储到文件
-                    dict = {
-                        '三级类目名称': category3_name,
-                        '三级类目编码': category3_code,
-                        '三级类目产品数': number,
-                        '页码': page_number,
-                        '产品编码': prd_name_number,
-                        '产品链接': d_url,
-                        '采集时间': rightnow,
-                    }
-                    print(rightnow, '....正在采集：', category2_name, category3_name, page, "/", page_number)
-                    csv_writer.writerow(dict)
-            print(f'===采集完成===累计耗时：', time.time() - time_1, rightnow)
+        for d_url in urls:
+            prd_name_number = re.findall(r'goodsNo=(.*?)&', d_url)[0]
+            print(category, page_number, number, prd_name_number)
 
 #
-def run(url):
-    open_csv_data()
-    # 配置oliveyoung主页地址，浏览器基础信息
-    url_start = url
+if __name__ == '__main__':
+    time_1 = time.time()
+    url_start = f'https://www.oliveyoung.co.kr/store/company/brandStory.do'
     selector_start = get_selector(url_start)
     # 解析html代码，获取主要分类名称和编码
     category2_names = selector_start.xpath('//*[@id="gnbAllMenu"]/ul/li[1]/div/ul/li/a/text()').getall()
     category2_codes = selector_start.xpath(
         '//*[@id="gnbAllMenu"]/ul/li[1]/div/ul/li/a[@data-ref-dispcatno]/@data-ref-dispcatno').getall()
-    parse_data()
-
-#
-if __name__ == '__main__':
-    time_1 = time.time()
+    zip_data_category2 = zip(category2_names, category2_codes)
+    # 解析数据
+    parse_data(zip_data_category2)
     # concurrent.futures模块提供了两种executor的子类，ThreadPoolExecutor各自独立操作一个线程和 ProcessPoolExecutor一个进程池
     exe = concurrent.futures.ThreadPoolExecutor(max_workers=10)
     # exe = concurrent.futures.ProcessPoolExecutor(max_workers=10)
-    url = f'https://www.oliveyoung.co.kr/store/company/brandStory.do'
+    open_category_product_list(page_number)
+    # 循环多线程
+    save_csv_data()
+    print(f'===采集完成===累计耗时：', time.time() - time_1, rightnow)
     exe.submit(run, url)
     exe.shutdown()
     print(f'总耗时:{time.time()-time_1}')
