@@ -2,6 +2,7 @@ import pprint
 from time import sleep
 import requests
 import parsel
+import json
 import csv
 import re
 import time
@@ -60,3 +61,51 @@ print(product_seller)
 ## 销售公司信息
 ## 与产品属性的tab在同一个json里
 ## https://www.coupang.com/vp/products/5735830650/items/9639246678/vendoritems/76923492094
+## 从产品详情页地址可以得到productId, itemId, vendoritems.
+url_detailpage_itemBrief = 'https://www.coupang.com/vp/products/5735830650/items/9639246678/vendoritems/76923492094'
+response_itemBrief = get_response(url_detailpage_itemBrief)
+detailpage_itemBrief_json_data = json.loads(response_itemBrief)
+# pprint.pprint(detailpage_itemBrief_json_data)
+# 용량 중량
+# weight = detailpage_itemBrief_json_data['essentials'][0]['description']
+# 제품 주요 사양
+# weight = detailpage_itemBrief_json_data['essentials'][1]['description']
+# 사용기한 또는 개봉 후 사용기간
+# weight = detailpage_itemBrief_json_data['essentials'][2]['description']
+# 사용방법
+# weight = detailpage_itemBrief_json_data['essentials'][3]['description']
+# 화장품제조업자 및 화장품책임판매업자
+# weight = detailpage_itemBrief_json_data['essentials'][4]['description']
+# 제조국
+# weight5 = detailpage_itemBrief_json_data['essentials'][5]['description']
+# 성분
+# weight6 = detailpage_itemBrief_json_data['essentials'][6]['description']
+# 기능성 화장품
+# weight7 = detailpage_itemBrief_json_data['essentials'][7]['description']
+# 주의사항
+# weight8 = detailpage_itemBrief_json_data['essentials'][8]['description']
+# 품질보증기준
+# weight = detailpage_itemBrief_json_data['essentials'][9]['description']
+# 소비자상담관련 전화번호
+# weight = detailpage_itemBrief_json_data['essentials'][10]['description']
+
+## returnPolicyVo 退换政策销售者公司信息
+# 사업자번호
+bizNum = detailpage_itemBrief_json_data['returnPolicyVo']['sellerDetailInfo']['bizNum']
+# 통신판매업 신고번호
+ecommReportNum = detailpage_itemBrief_json_data['returnPolicyVo']['sellerDetailInfo']['ecommReportNum']
+# 사업장 소재지
+repAddress = detailpage_itemBrief_json_data['returnPolicyVo']['sellerDetailInfo']['repAddress']
+# e-mail
+repEmail = detailpage_itemBrief_json_data['returnPolicyVo']['sellerDetailInfo']['repEmail']
+# 联系人姓名
+repPersonName = detailpage_itemBrief_json_data['returnPolicyVo']['sellerDetailInfo']['repPersonName']
+# 연락처
+repPhoneNum = detailpage_itemBrief_json_data['returnPolicyVo']['sellerDetailInfo']['repPhoneNum']
+# 상호/대표자
+sellerWithRepPersonName = detailpage_itemBrief_json_data['returnPolicyVo']['sellerDetailInfo']['sellerWithRepPersonName']
+# 商号
+vendorName = detailpage_itemBrief_json_data['returnPolicyVo']['sellerDetailInfo']['vendorName']
+print(bizNum,ecommReportNum,repAddress,repEmail, repPersonName,repPhoneNum, sellerWithRepPersonName, vendorName)
+
+pprint.pprint(detailpage_itemBrief_json_data)
