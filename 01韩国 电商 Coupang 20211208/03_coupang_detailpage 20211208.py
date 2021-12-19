@@ -21,7 +21,11 @@ def get_selector(html_url):
     selector = parsel.Selector(html_data_url)
     return selector
 
-url_detailpage = f'https://www.coupang.com/vp/products/344529480?itemId=148293960&vendorItemId=3335127002&pickType=COU_PICK&q=%EB%A1%9C%EC%85%98&itemsCount=36&searchId=b5738182b86f48b9a249acf9e1f240a3&rank=1&isAddedCart='
+url_detailpage = f'https://www.coupang.com/vp/products/5735830650?itemId=9639246678&searchId=8c712519cb0e4b659cc24325f95a56dc&vendorItemId=76923492094&sourceType=SDP_BOTTOM_ADS&clickEventId=9957826d-6e3f-4d42-bfff-3a6f6f7aa6ef&isAddedCart='
+productId = re.findall(f'products/(.*?)\?', url_detailpage)[0]
+itemId = re.findall(f'itemId=(.*?)&', url_detailpage)[0]
+vendoritems = re.findall(f'vendorItemId=(.*?)&', url_detailpage)[0]
+print(productId,itemId, vendoritems)
 selector_detailpage = get_selector(url_detailpage)
 
 # 产品名
@@ -40,20 +44,20 @@ unit_price = selector_detailpage.xpath('//*[@id="contents"]/div[1]/div/div[3]/di
 # prod-description-attribute
 prod_attr_item = selector_detailpage.xpath('//*[@class="prod-description"]/ul/li/text()').get()
 # print(prod_attr_item)
-print(prod_buy_header_title, reviews_count,discount_rate,origin_price,prod_sale_price,unit_price,)
+# print(prod_buy_header_title, reviews_count,discount_rate,origin_price,prod_sale_price,unit_price,)
 
 ## 通过构建下面的产品属性链接解决采集属性标签的问题
 ## https://www.coupang.com/vp/products/344529480/items/148293960/vendoritems/3335127002
 ## tab-titles
 # product-item__table
 prod_attr_info = selector_detailpage.xpath('//*[@id="btfTab"]/ul[2]/li[4]/div/table/tbody/tr/td/text()').get()
-print('product-item__table')
-print(prod_attr_info)
+# print('product-item__table')
+# print(prod_attr_info)
 
 ## 产品销售者信息 product-item__table product-seller
 product_seller = selector_detailpage.xpath('//*[@id="itemBrief"]/div/table/tbody/tr[3]/td[1]/text()').get()
-print('产品销售者信息 product-item__table product-seller')
-print(product_seller)
+# print('产品销售者信息 product-item__table product-seller')
+# print(product_seller)
 
 ## 产品review_tab请求链接
 ## https://www.coupang.com/vp/product/reviews?productId=344529480&page=1&size=5&sortBy=ORDER_SCORE_ASC&ratings=&q=&viRoleCode=3&ratingSummary=true
@@ -62,7 +66,7 @@ print(product_seller)
 ## 与产品属性的tab在同一个json里
 ## https://www.coupang.com/vp/products/5735830650/items/9639246678/vendoritems/76923492094
 ## 从产品详情页地址可以得到productId, itemId, vendoritems.
-url_detailpage_itemBrief = 'https://www.coupang.com/vp/products/5735830650/items/9639246678/vendoritems/76923492094'
+url_detailpage_itemBrief = f'https://www.coupang.com/vp/products/{productId}/items/{itemId}/vendoritems/{vendoritems}'
 response_itemBrief = get_response(url_detailpage_itemBrief)
 detailpage_itemBrief_json_data = json.loads(response_itemBrief)
 # pprint.pprint(detailpage_itemBrief_json_data)
@@ -108,4 +112,4 @@ sellerWithRepPersonName = detailpage_itemBrief_json_data['returnPolicyVo']['sell
 vendorName = detailpage_itemBrief_json_data['returnPolicyVo']['sellerDetailInfo']['vendorName']
 print(bizNum,ecommReportNum,repAddress,repEmail, repPersonName,repPhoneNum, sellerWithRepPersonName, vendorName)
 
-pprint.pprint(detailpage_itemBrief_json_data)
+# pprint.pprint(detailpage_itemBrief_json_data)
