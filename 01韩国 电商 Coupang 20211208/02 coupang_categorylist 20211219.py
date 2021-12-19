@@ -68,7 +68,7 @@ for category2_name, category2_code_raw in zipdata_category2:
 
             for category5_name, category5_code in zipdata_category5:
                 print('五级类目', category5_name, category5_code)
-                print(category1_name,category2_name,category2_code, category3_name, category3_code,category4_name,category4_code, category5_name, category5_code)
+                print(category1_name, category2_name, category2_code, category3_name, category3_code,category4_name,category4_code, category5_name, category5_code)
 
                 for page_number in range(1, 10):
                     url_category5_productlist = f'https://www.coupang.com/np/categories/{category5_code}?listSize=60&brand=&offerCondition=&filterType=&isPriceRange=false&minPrice=&maxPrice=&page={page_number}&channel=user&fromComponent=N&selectedPlpKeepFilter=&sorter=saleCountDesc&filter=&component={category5_code}&rating=0'
