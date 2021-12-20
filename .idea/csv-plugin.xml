@@ -3,6 +3,20 @@
   <component name="CsvFileAttributes">
     <option name="attributeMap">
       <map>
+        <entry key="\01韩国 电商 Coupang 20211208\02_coupang_listing.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="\01韩国 电商 Coupang 20211208\02_coupang_listing02.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\01韩国 电商 oliveyoung韩语 20211119\version02 oliveyoung category 多线程\02_oliveyoung_listing.csv">
           <value>
             <Attribute>
