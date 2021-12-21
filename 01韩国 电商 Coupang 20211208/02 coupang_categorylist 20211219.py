@@ -8,6 +8,15 @@ import re
 import time
 import concurrent.futures
 
+# 预设置参数部分
+# 项目计时用
+time_1 = time.time()
+
+# 时间戳
+rightnow = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+
+# 序号
+order_number = 0
 
 # 创建csv文件和表头
 f = open('02_coupang_listing.csv', mode='a', encoding='utf-8', newline='')
@@ -21,8 +30,6 @@ csv_writer = csv.DictWriter(f, fieldnames=[
 '四级类目编码',
 '五级类目名称',
 '五级类目编码',
-'存在四级类目',
-'存在五级类目',
 '页码',
 '序号',
 '产品名称',
@@ -30,15 +37,6 @@ csv_writer = csv.DictWriter(f, fieldnames=[
 '采集时间',
 ])
 csv_writer.writeheader()
-
-# 项目计时用
-time_1 = time.time()
-
-# 时间戳
-rightnow = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-
-# 序号
-order_number = 0
 
 url_homepage = f'https://www.coupang.com/'
 headers = {
@@ -69,69 +67,40 @@ for category2_name, category2_code_raw in zipdata_category2:
 
     category3_names = selector_category2.xpath(f'//*[@id="searchCategoryComponent"]/ul/li[1]/ul/li/label/text()').getall()
     category3_codes = selector_category2.xpath(f'//*[@id="searchCategoryComponent"]/ul/li[1]/ul/li[@data-linkcode]/@data-linkcode').getall()
-    zipdata_category3 = zip(category3_names, category3_codes)
 
-    for category3_name, category3_code in zipdata_category3:
-        # print('三级类目', category3_name, category3_code)
-        url_category3 = f'https://www.coupang.com/np/categories/' + category3_code
-        response_category3 = requests.get(url=url_category3, headers=headers)
-        html_data_category3 = response_category3.text
-        # print(html_data_category2)
-        selector_category3 = parsel.Selector(html_data_category3)
-
-        category4_names = selector_category3.xpath(f'//*[@data-linkcode="{category3_code}"]/ul/li/label/text()').getall()
-        if len(category4_names) == 0:
-            category4_exist = 'none'
-            category4_names = category3_names
-            category4_codes = category3_codes
-            # print('没有四级分类')
-        else:
-            category4_exist = 'yes'
-            category4_codes = selector_category3.xpath(f'//*[@data-linkcode="{category3_code}"]/ul/li[@data-linkcode]/@data-linkcode').getall()
-
-        zipdata_category4 = zip(category4_names, category4_codes)
-
-        for category4_name, category4_code in zipdata_category4:
-            print('四级类目', category4_name, category4_code)
-            url_category4 = f'https://www.coupang.com/np/categories/' + category4_code
-            response_category4 = requests.get(url=url_category4, headers=headers)
-            html_data_category4 = response_category4.text
-            # print(html_data_category2)
-            selector_category4 = parsel.Selector(html_data_category4)
-
-            category5_names = selector_category4.xpath(f'//*[@data-linkcode="{category4_code}"]/ul/li/label/text()').getall()
-            # print(len(category5_names))
-            if len(category5_names) == 0:
-                category5_exist = 'none'
-                category5_names = category4_names
-                category5_codes = category4_codes
-                # print('没有五级分类')
-            else:
-                category5_exist = 'yes'
-                category5_codes = selector_category4.xpath(f'//*[@data-linkcode="{category4_code}"]/ul/li[@data-linkcode]/@data-linkcode').getall()
-
-            zipdata_category5 = zip(category5_names, category5_codes)
-
-            for category5_name, category5_code in zipdata_category5:
-                # print('五级类目', category5_name, category5_code)
-                print('category1：', category1_name, 'category2：', category2_name, category2_code, 'category3：', category3_name, category3_code,'category4：', category4_name,category4_code, 'category5：',category5_name, category5_code)
+    # 判断空值
+    if len(category3_names) == 0:
+                category3_name = ''
+                category3_code = ''
+                category4_name = ''
+                category4_code = ''
+                category5_name = ''
+                category5_code = ''
 
                 for page_number in range(1, 10):
-                    url_category5_productlist = f'https://www.coupang.com/np/categories/{category5_code}?listSize=60&brand=&offerCondition=&filterType=&isPriceRange=false&minPrice=&maxPrice=&page={page_number}&channel=user&fromComponent=N&selectedPlpKeepFilter=&sorter=saleCountDesc&filter=&component={category5_code}&rating=0'
+
+                    # listSize选择页面显示产品数量可以选择60，120
+                    listSize = 120
+                    # sorter排序规则 쿠팡 랭킹순：bestAsc; 낮은가격순: salePriceAsc; 높은가격순: salePriceDesc; 판매량순:saleCountDesc; 최신순:latestAsc;
+                    sorter = 'saleCountDesc'
+
+                    url_category5_productlist = f'https://www.coupang.com/np/categories/{category2_code}?listSize={listSize}&brand=&offerCondition=&filterType=&isPriceRange=false&minPrice=&maxPrice=&page={page_number}&channel=user&fromComponent=N&selectedPlpKeepFilter=&sorter={sorter}&filter=&component={category2_code}&rating=0'
                     print(f'============正在采集第{page_number}页产品列表================')
                     response_category5_productlist = requests.get(url=url_category5_productlist, headers=headers)
                     html_data_category5_productlist = response_category5_productlist.text
                     selector_category5_productlist = parsel.Selector(html_data_category5_productlist)
 
-                    product_names = selector_category5_productlist.xpath('//*[@id="productList"]/li/a/dl/dd/div[2]/text()').getall()
-                    detailpage_urls = selector_category5_productlist.xpath('//*[@id="productList"]/li/a[@href]/@href').getall()
+                    product_names = selector_category5_productlist.xpath(
+                        '//*[@id="productList"]/li/a/dl/dd/div[2]/text()').getall()
+                    detailpage_urls = selector_category5_productlist.xpath(
+                        '//*[@id="productList"]/li/a[@href]/@href').getall()
                     zipdata_listing = zip(product_names, detailpage_urls)
 
                     for product_name_raw, detailpage_url_raw in zipdata_listing:
-                        order_number = order_number+1
                         product_name = product_name_raw.strip()
-                        detailpage_url = f'https://www.coupang.com'+detailpage_url_raw
-                        print( f'\033[31m正在采集第{order_number}条数据\033[0m', product_name, detailpage_url)
+                        order_number = order_number+1
+                        detailpage_url = f'https://www.coupang.com' + detailpage_url_raw
+                        print(f'\033[31m正在采集第{order_number}条数据\033[0m', product_name, detailpage_url)
                         # 建立字典存储到文件
                         dict = {
                             '一级类目名称': category1_name,
@@ -143,8 +112,182 @@ for category2_name, category2_code_raw in zipdata_category2:
                             '四级类目编码': category4_code,
                             '五级类目名称': category5_name,
                             '五级类目编码': category5_code,
-                            '存在四级类目': category4_exist,
-                            '存在五级类目': category5_exist,
+                            '页码': page_number,
+                            '序号': order_number,
+                            '产品名称': product_name,
+                            '产品链接': detailpage_url,
+                            '采集时间': rightnow,
+                        }
+                        print(rightnow, '>>>\033[00;42m数据写入完毕：\033[0m')
+                        csv_writer.writerow(dict)
+
+    # print(category1_name, category2_name, category2_code, category3_name, category3_code, category4_name, category4_code, category5_name, category5_code)
+
+    zipdata_category3 = zip(category3_names, category3_codes)
+
+    for category3_name, category3_code in zipdata_category3:
+        # print('三级类目', category3_name, category3_code)
+        url_category3 = f'https://www.coupang.com/np/categories/' + category3_code
+        response_category3 = requests.get(url=url_category3, headers=headers)
+        html_data_category3 = response_category3.text
+        # print(html_data_category2)
+        selector_category3 = parsel.Selector(html_data_category3)
+
+        category4_names = selector_category3.xpath(f'//*[@data-linkcode="{category3_code}"]/ul/li/label/text()').getall()
+        category4_codes = selector_category3.xpath(f'//*[@data-linkcode="{category3_code}"]/ul/li[@data-linkcode]/@data-linkcode').getall()
+
+        # 判断空值
+        if len(category4_names) == 0:
+            category4_name = ''
+            category4_code = ''
+            category5_name = ''
+            category5_code = ''
+            for page_number in range(1, 10):
+
+                # listSize选择页面显示产品数量可以选择60，120
+                listSize = 120
+                # sorter排序规则 쿠팡 랭킹순：bestAsc; 낮은가격순: salePriceAsc; 높은가격순: salePriceDesc; 판매량순:saleCountDesc; 최신순:latestAsc;
+                sorter = 'saleCountDesc'
+
+                url_category5_productlist = f'https://www.coupang.com/np/categories/{category3_code}?listSize={listSize}&brand=&offerCondition=&filterType=&isPriceRange=false&minPrice=&maxPrice=&page={page_number}&channel=user&fromComponent=N&selectedPlpKeepFilter=&sorter={sorter}&filter=&component={category3_code}&rating=0'
+                print(f'============正在采集第{page_number}页产品列表================')
+                response_category5_productlist = requests.get(url=url_category5_productlist, headers=headers)
+                html_data_category5_productlist = response_category5_productlist.text
+                selector_category5_productlist = parsel.Selector(html_data_category5_productlist)
+
+                product_names = selector_category5_productlist.xpath(
+                    '//*[@id="productList"]/li/a/dl/dd/div[2]/text()').getall()
+                detailpage_urls = selector_category5_productlist.xpath(
+                    '//*[@id="productList"]/li/a[@href]/@href').getall()
+                zipdata_listing = zip(product_names, detailpage_urls)
+
+                for product_name_raw, detailpage_url_raw in zipdata_listing:
+                    product_name = product_name_raw.strip()
+                    order_number = order_number+1
+                    detailpage_url = f'https://www.coupang.com' + detailpage_url_raw
+                    print(f'\033[31m正在采集第{order_number}条数据\033[0m', product_name, detailpage_url)
+                    # 建立字典存储到文件
+                    dict = {
+                        '一级类目名称': category1_name,
+                        '二级类目名称': category2_name,
+                        '二级类目编码': category2_code,
+                        '三级类目名称': category3_name,
+                        '三级类目编码': category3_code,
+                        '四级类目名称': category4_name,
+                        '四级类目编码': category4_code,
+                        '五级类目名称': category5_name,
+                        '五级类目编码': category5_code,
+                        '页码': page_number,
+                        '序号': order_number,
+                        '产品名称': product_name,
+                        '产品链接': detailpage_url,
+                        '采集时间': rightnow,
+                    }
+                    print(rightnow, '>>>\033[00;42m数据写入完毕：\033[0m')
+                    csv_writer.writerow(dict)
+            # print(category1_name, category2_name, category2_code, category3_name, category3_code, category4_name, category4_code, category5_name, category5_code)
+
+        zipdata_category4 = zip(category4_names, category4_codes)
+
+        for category4_name, category4_code in zipdata_category4:
+            # print(len(category4_name))
+            # print('三级类目', category3_name, category3_code, '四级类目', category4_name, category4_code)
+            url_category4 = f'https://www.coupang.com/np/categories/' + category4_code
+            response_category4 = requests.get(url=url_category4, headers=headers)
+            html_data_category4 = response_category4.text
+            # print(html_data_category2)
+            selector_category4 = parsel.Selector(html_data_category4)
+
+            category5_names = selector_category4.xpath(f'//*[@data-linkcode="{category4_code}"]/ul/li/label/text()').getall()
+            category5_codes = selector_category4.xpath(f'//*[@data-linkcode="{category4_code}"]/ul/li[@data-linkcode]/@data-linkcode').getall()
+
+            # 判断空值
+            if len(category5_names) == 0:
+                category5_name = ''
+                category5_code = ''
+                for page_number in range(1, 10):
+
+                    # listSize选择页面显示产品数量可以选择60，120
+                    listSize = 120
+                    # sorter排序规则 쿠팡 랭킹순：bestAsc; 낮은가격순: salePriceAsc; 높은가격순: salePriceDesc; 판매량순:saleCountDesc; 최신순:latestAsc;
+                    sorter = 'saleCountDesc'
+
+                    url_category5_productlist = f'https://www.coupang.com/np/categories/{category4_code}?listSize={listSize}&brand=&offerCondition=&filterType=&isPriceRange=false&minPrice=&maxPrice=&page={page_number}&channel=user&fromComponent=N&selectedPlpKeepFilter=&sorter={sorter}&filter=&component={category4_code}&rating=0'
+                    print(f'============正在采集第{page_number}页产品列表================')
+                    response_category5_productlist = requests.get(url=url_category5_productlist, headers=headers)
+                    html_data_category5_productlist = response_category5_productlist.text
+                    selector_category5_productlist = parsel.Selector(html_data_category5_productlist)
+
+                    product_names = selector_category5_productlist.xpath(
+                        '//*[@id="productList"]/li/a/dl/dd/div[2]/text()').getall()
+                    detailpage_urls = selector_category5_productlist.xpath(
+                        '//*[@id="productList"]/li/a[@href]/@href').getall()
+                    zipdata_listing = zip(product_names, detailpage_urls)
+
+                    for product_name_raw, detailpage_url_raw in zipdata_listing:
+                        product_name = product_name_raw.strip()
+                        order_number = order_number+1
+                        detailpage_url = f'https://www.coupang.com' + detailpage_url_raw
+                        print(f'\033[31m正在采集第{order_number}条数据\033[0m', product_name, detailpage_url)
+                        # 建立字典存储到文件
+                        dict = {
+                            '一级类目名称': category1_name,
+                            '二级类目名称': category2_name,
+                            '二级类目编码': category2_code,
+                            '三级类目名称': category3_name,
+                            '三级类目编码': category3_code,
+                            '四级类目名称': category4_name,
+                            '四级类目编码': category4_code,
+                            '五级类目名称': category5_name,
+                            '五级类目编码': category5_code,
+                            '页码': page_number,
+                            '序号': order_number,
+                            '产品名称': product_name,
+                            '产品链接': detailpage_url,
+                            '采集时间': rightnow,
+                        }
+                        print(rightnow, '>>>\033[00;42m数据写入完毕：\033[0m')
+                        csv_writer.writerow(dict)
+                # print(category1_name, category2_name, category2_code, category3_name, category3_code, category4_name, category4_code, category5_name, category5_code)
+
+            zipdata_category5 = zip(category5_names, category5_codes)
+
+            for category5_name, category5_code in zipdata_category5:
+                print('一级类目', category1_name, '二级类目', category2_name, category2_code, '三级类目', category3_name, category3_code, '四级类目', category4_name, category4_code, '五级类目', category5_name, category5_code)
+                # print('category1：', category1_name, 'category2：', category2_name, category2_code, 'category3：', category3_name, category3_code,'category4：', category4_name,category4_code, 'category5：',category5_name, category5_code)
+
+                for page_number in range(1, 10):
+
+                    # listSize选择页面显示产品数量可以选择60，120
+                    listSize = 120
+                    # sorter排序规则 쿠팡 랭킹순：bestAsc; 낮은가격순: salePriceAsc; 높은가격순: salePriceDesc; 판매량순:saleCountDesc; 최신순:latestAsc;
+                    sorter = 'saleCountDesc'
+
+                    url_category5_productlist = f'https://www.coupang.com/np/categories/{category5_code}?listSize={listSize}&brand=&offerCondition=&filterType=&isPriceRange=false&minPrice=&maxPrice=&page={page_number}&channel=user&fromComponent=N&selectedPlpKeepFilter=&sorter={sorter}&filter=&component={category5_code}&rating=0'
+                    print(f'============正在采集第{page_number}页产品列表================')
+                    response_category5_productlist = requests.get(url=url_category5_productlist, headers=headers)
+                    html_data_category5_productlist = response_category5_productlist.text
+                    selector_category5_productlist = parsel.Selector(html_data_category5_productlist)
+
+                    product_names = selector_category5_productlist.xpath('//*[@id="productList"]/li/a/dl/dd/div[2]/text()').getall()
+                    detailpage_urls = selector_category5_productlist.xpath('//*[@id="productList"]/li/a[@href]/@href').getall()
+                    zipdata_listing = zip(product_names, detailpage_urls)
+
+                    for product_name_raw, detailpage_url_raw in zipdata_listing:
+                        product_name = product_name_raw.strip()
+                        detailpage_url = f'https://www.coupang.com'+detailpage_url_raw
+                        print( f'\033[31m正在采集第{order_number+1}条数据\033[0m', product_name, detailpage_url)
+                        # 建立字典存储到文件
+                        dict = {
+                            '一级类目名称': category1_name,
+                            '二级类目名称': category2_name,
+                            '二级类目编码': category2_code,
+                            '三级类目名称': category3_name,
+                            '三级类目编码': category3_code,
+                            '四级类目名称': category4_name,
+                            '四级类目编码': category4_code,
+                            '五级类目名称': category5_name,
+                            '五级类目编码': category5_code,
                             '页码': page_number,
                             '序号': order_number,
                             '产品名称': product_name,
