@@ -10,7 +10,7 @@ import concurrent.futures
 
 
 # 创建csv文件和表头
-f = open('02_coupang_listing02.csv', mode='a', encoding='utf-8', newline='')
+f = open('02_coupang_listing.csv', mode='a', encoding='utf-8', newline='')
 csv_writer = csv.DictWriter(f, fieldnames=[
 '一级类目名称',
 '二级类目名称',
@@ -21,6 +21,7 @@ csv_writer = csv.DictWriter(f, fieldnames=[
 '四级类目编码',
 '五级类目名称',
 '五级类目编码',
+'存在四级类目',
 '存在五级类目',
 '页码',
 '序号',
@@ -79,11 +80,19 @@ for category2_name, category2_code_raw in zipdata_category2:
         selector_category3 = parsel.Selector(html_data_category3)
 
         category4_names = selector_category3.xpath(f'//*[@data-linkcode="{category3_code}"]/ul/li/label/text()').getall()
-        category4_codes = selector_category3.xpath(f'//*[@data-linkcode="{category3_code}"]/ul/li[@data-linkcode]/@data-linkcode').getall()
-        zipdata_category4 = zip(category4_names,category4_codes)
+        if len(category4_names) == 0:
+            category4_exist = 'none'
+            category4_names = category3_names
+            category4_codes = category3_codes
+            # print('没有四级分类')
+        else:
+            category4_exist = 'yes'
+            category4_codes = selector_category3.xpath(f'//*[@data-linkcode="{category3_code}"]/ul/li[@data-linkcode]/@data-linkcode').getall()
+
+        zipdata_category4 = zip(category4_names, category4_codes)
 
         for category4_name, category4_code in zipdata_category4:
-            # print('四级类目', category4_name, category4_code)
+            print('四级类目', category4_name, category4_code)
             url_category4 = f'https://www.coupang.com/np/categories/' + category4_code
             response_category4 = requests.get(url=url_category4, headers=headers)
             html_data_category4 = response_category4.text
@@ -134,6 +143,7 @@ for category2_name, category2_code_raw in zipdata_category2:
                             '四级类目编码': category4_code,
                             '五级类目名称': category5_name,
                             '五级类目编码': category5_code,
+                            '存在四级类目': category4_exist,
                             '存在五级类目': category5_exist,
                             '页码': page_number,
                             '序号': order_number,
