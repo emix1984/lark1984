@@ -1,23 +1,48 @@
-#
-# import requests
-# import  parsel
-# headers = {
-#     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.113 Safari/537.36',
-#     'Connection': 'close'
-# }
-# url = 'https://www.oliveyoung.co.kr/store/display/getCategoryShop.do?dispCatNo=10000010001&gateCd=Drawer'
-# response = requests.get(url=url, headers=headers)
-# html_data = response.text
-# selector = parsel.Selector(html_data)
-# category2_names = selector.xpath('//*[@id="Contents"]/div/div[1]/ul/li/a/span/text()').getall()
-# category2_codes = selector.xpath('//*[@id="Contents"]/div/div[1]/ul/li/a[@class]/@class').getall()
-#
-# print(category2_names,category2_codes)
-#
-# for category2_name, category2_code in zip(category2_names,category2_codes):
-#     print(category2_name,category2_code)
+# 多线程池测试 20211221
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import requests
+import parsel
+import time
 
-lis = [""]
-print('lis', lis)
-for li in lis:
-    print('li', li)
+time_start = time.time()
+headers = {
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/96.0.4664.113 Safari/537.36',
+    'Connection': 'close'
+}
+
+def getselector(url):
+    response = requests.get(url=url, headers=headers)
+    print(response)
+    html_data = response.text
+    # print(len(html_data))
+    selector = parsel.Selector(html_data)
+    return selector
+
+def getdata(selector):
+    titles = selector.xpath('//*[@id="post_list"]/article/section/div/a/text()').getall()
+    names = selector.xpath('//*[@id="post_list"]/article/section/footer/a[1]/span/text()').getall()
+    zipdata = zip(titles,names)
+    # print('kaishi', titles, names)
+    return zipdata
+
+def run(url):
+    selector = getselector(url)
+    zipdata = getdata(selector)
+    for title, name in zipdata:
+        print('kaishi', name, title)
+
+if __name__ == '__main__':
+    urls = []
+    for page in range(1,101):
+        url1 = f'https://www.cnblogs.com/#p{page}'
+        urls.append(url1)
+
+    with ThreadPoolExecutor() as pool:
+        futures = [pool.submit(run, url)
+                   for url in urls]
+        for future in futures:
+            print(future.result())
+        for future in as_completed(futures):
+            print(future.result())
+    print('jieshu', time.time()-time_start)
+
