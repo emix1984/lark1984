@@ -164,16 +164,34 @@ for url_detailpage in urls_detailpage:
 
     # 제조국
     bi_6 = detailpage_itemBrief_json_data['essentials'][5]['description']
+    # 判断空值
+    if bi_6 == 0:
+        bi_6 = ""
     # 성분
     bi_7 = detailpage_itemBrief_json_data['essentials'][6]['description']
+    # 判断空值
+    if bi_7 == 0:
+        bi_7 = ""
     # 기능성 화장품
     bi_8 = detailpage_itemBrief_json_data['essentials'][7]['description']
+    # 判断空值
+    if bi_8 == 0:
+        bi_8 = ""
     # 주의사항
     bi_9 = detailpage_itemBrief_json_data['essentials'][8]['description']
+    # 判断空值
+    if bi_9 == 0:
+        bi_9 = ""
     # 품질보증기준
     bi_10 = detailpage_itemBrief_json_data['essentials'][9]['description']
+    # 判断空值
+    if bi_10 == 0:
+        bi_10 = ""
     # 소비자상담관련 전화번호
     bi_11 = detailpage_itemBrief_json_data['essentials'][10]['description']
+    # 判断空值
+    if bi_11 == 0:
+        bi_11 = ""
     # print(bi_1, bi_2,bi_3,bi_4,bi_5,bi_6,bi_7,bi_8,bi_9, bi_10, bi_11)
 
     ## returnPolicyVo 退换政策销售者公司信息
