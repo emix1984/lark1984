@@ -69,7 +69,7 @@ urls_detailpage = data02["产品链接"]
 for url_detailpage in urls_detailpage:
     # 计数
     n = n+1
-    print(f'>>>正在采集第\033[00;41m{n}\033[0m条数据', url_detailpage)
+    print(f'>>>正在采集第\033[32m{n}\033[0m条数据', url_detailpage)
 
     productId = re.findall(f'products/(.*?)\?', url_detailpage)[0]
     itemId = re.findall(f'itemId=(.*?)&', url_detailpage)[0]
@@ -95,7 +95,8 @@ for url_detailpage in urls_detailpage:
     # 产品名
     prod_buy_header_title = selector_detailpage.xpath('//*[@id="contents"]/div[1]/div/div[3]/div[3]/h2/text()').get()
     # 产品缩略图
-    dp_img = selector_detailpage.xpath('//*[@id="repImageContainer"]/img[@src]/@src').get()
+    dp_img_raw = selector_detailpage.xpath('//*[@id="repImageContainer"]/img[@src]/@src').get()
+    dp_img = "https:"+dp_img_raw
 
     # 产品评论数
     reviews_count = selector_detailpage.xpath('//*[@id="prod-review-nav-link"]/span[2]/text()').get()
@@ -130,71 +131,85 @@ for url_detailpage in urls_detailpage:
     # 용량 중량
     bi_1 = detailpage_itemBrief_json_data['essentials'][0]['description']
     # 제품 주요 사양
-    bi_2 = detailpage_itemBrief_json_data['essentials'][1]['description']
+    if "제품 주요 사양" not in detailpage_itemBrief_json_data:
+        bi_2 = ""
+    else:
+        bi_2 = detailpage_itemBrief_json_data['essentials'][1]['description']
     # 사용기한 또는 개봉 후 사용기간
-    bi_3 = detailpage_itemBrief_json_data['essentials'][2]['description']
+    if "사용기한" not in detailpage_itemBrief_json_data:
+        bi_3 = ""
+    else:
+        bi_3 = detailpage_itemBrief_json_data['essentials'][2]['description']
     # 사용방법
-    bi_4 = detailpage_itemBrief_json_data['essentials'][3]['description']
+    if "사용방법" not in detailpage_itemBrief_json_data:
+        bi_4 = ""
+    else:
+        bi_4 = detailpage_itemBrief_json_data['essentials'][3]['description']
     # 화장품제조업자 및 화장품책임판매업자
-    bi_5 = detailpage_itemBrief_json_data['essentials'][4]['description']
-
-    if "/" in bi_5:
-        # 通过判断区分화장품제조업자和화장품책임판매업자
-        # 제조사
-        bi_5_1_raw = re.findall(r"(.*)/", bi_5, re.S)[0]
-        # if ":" in bi_5_1_raw:
+    if "화장품제조업자" not in detailpage_itemBrief_json_data:
+        bi_5 = ""
+        bi_5_1 = bi_5_2 = bi_5
+    else:
+        bi_5 = detailpage_itemBrief_json_data['essentials'][4]['description']
+        if "/" in bi_5:
+            # 通过判断区分화장품제조업자和화장품책임판매업자
+            # 제조사
+            bi_5_1_raw = re.findall(r"(.*)/", bi_5, re.S)[0]
+            # if ":" in bi_5_1_raw:
+            #     bi_5_1_raw_raw = re.findall(r"제조.*:(.*) ", bi_5_1_raw, re.S)[0]
+            #     bi_5_1 = "".join(bi_5_1_raw_raw).strip()
+            # else:
+            bi_5_1 = "".join(bi_5_1_raw).strip()
+            # 판매업자
+            bi_5_2_raw = re.findall(r"/(.*)", bi_5, re.S)[0]
+            # if ":" in bi_5_2_raw:
+            #     bi_5_2_raw_raw = re.findall(r"판매.*::(.*) ", bi_5_2_raw, re.S)[0]
+            #     bi_5_2 = "".join(bi_5_2_raw_raw).strip()
+            # else:
+            bi_5_2 = "".join(bi_5_2_raw).strip()
+        # elif ":" in bi_5:
         #     bi_5_1_raw_raw = re.findall(r"제조.*:(.*) ", bi_5_1_raw, re.S)[0]
         #     bi_5_1 = "".join(bi_5_1_raw_raw).strip()
-        # else:
-        bi_5_1 = "".join(bi_5_1_raw).strip()
-        # 판매업자
-        bi_5_2_raw = re.findall(r"/(.*)", bi_5, re.S)[0]
-        # if ":" in bi_5_2_raw:
         #     bi_5_2_raw_raw = re.findall(r"판매.*::(.*) ", bi_5_2_raw, re.S)[0]
         #     bi_5_2 = "".join(bi_5_2_raw_raw).strip()
-        # else:
-        bi_5_2 = "".join(bi_5_2_raw).strip()
-    # elif ":" in bi_5:
-    #     bi_5_1_raw_raw = re.findall(r"제조.*:(.*) ", bi_5_1_raw, re.S)[0]
-    #     bi_5_1 = "".join(bi_5_1_raw_raw).strip()
-    #     bi_5_2_raw_raw = re.findall(r"판매.*::(.*) ", bi_5_2_raw, re.S)[0]
-    #     bi_5_2 = "".join(bi_5_2_raw_raw).strip()
-    else:
-        bi_5_1 = bi_5_2 = bi_5
+        else:
+            bi_5_1 = bi_5_2 = bi_5
 
     # 제조국
     if "제조국" not in detailpage_itemBrief_json_data:
-        print("not exist")
         bi_6 = ""
     else:
-        print('exist')
         bi_6 = detailpage_itemBrief_json_data['essentials'][5]['description']
 
     # 성분
-    bi_7 = detailpage_itemBrief_json_data['essentials'][6]['description']
-    # 判断空值
-    if bi_7 == 0:
+    if "표시하여야 하는 모든 성분" not in detailpage_itemBrief_json_data:
         bi_7 = ""
+    else:
+        bi_7 = detailpage_itemBrief_json_data['essentials'][6]['description']
+
     # 기능성 화장품
-    bi_8 = detailpage_itemBrief_json_data['essentials'][7]['description']
-    # 判断空值
-    if bi_8 == 0:
+    if "기능성 화장품" not in detailpage_itemBrief_json_data:
         bi_8 = ""
+    else:
+        bi_8 = detailpage_itemBrief_json_data['essentials'][7]['description']
+
     # 주의사항
-    bi_9 = detailpage_itemBrief_json_data['essentials'][8]['description']
-    # 判断空值
-    if bi_9 == 0:
+    if "주의사항" not in detailpage_itemBrief_json_data:
         bi_9 = ""
+    else:
+        bi_9 = detailpage_itemBrief_json_data['essentials'][8]['description']
+
     # 품질보증기준
-    bi_10 = detailpage_itemBrief_json_data['essentials'][9]['description']
-    # 判断空值
-    if bi_10 == 0:
+    if "품질보증기준" not in detailpage_itemBrief_json_data:
         bi_10 = ""
+    else:
+        bi_10 = detailpage_itemBrief_json_data['essentials'][9]['description']
+
     # 소비자상담관련 전화번호
-    bi_11 = detailpage_itemBrief_json_data['essentials'][10]['description']
-    # 判断空值
-    if bi_11 == 0:
+    if "소비자상담관련 전화번호" not in detailpage_itemBrief_json_data:
         bi_11 = ""
+    else:
+        bi_11 = detailpage_itemBrief_json_data['essentials'][10]['description']
     # print(bi_1, bi_2,bi_3,bi_4,bi_5,bi_6,bi_7,bi_8,bi_9, bi_10, bi_11)
 
     ## returnPolicyVo 退换政策销售者公司信息
