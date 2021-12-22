@@ -131,22 +131,22 @@ for url_detailpage in urls_detailpage:
     # 용량 중량
     bi_1 = detailpage_itemBrief_json_data['essentials'][0]['description']
     # 제품 주요 사양
-    if "제품 주요 사양" not in detailpage_itemBrief_json_data:
+    if "제품 주요 사양" not in response_detailpage_itemBrief:
         bi_2 = ""
     else:
         bi_2 = detailpage_itemBrief_json_data['essentials'][1]['description']
     # 사용기한 또는 개봉 후 사용기간
-    if "사용기한" not in detailpage_itemBrief_json_data:
+    if "사용기한" not in response_detailpage_itemBrief:
         bi_3 = ""
     else:
         bi_3 = detailpage_itemBrief_json_data['essentials'][2]['description']
     # 사용방법
-    if "사용방법" not in detailpage_itemBrief_json_data:
+    if "사용방법" not in response_detailpage_itemBrief:
         bi_4 = ""
     else:
         bi_4 = detailpage_itemBrief_json_data['essentials'][3]['description']
     # 화장품제조업자 및 화장품책임판매업자
-    if "화장품제조업자" not in detailpage_itemBrief_json_data:
+    if "화장품제조업자" not in response_detailpage_itemBrief:
         bi_5 = ""
         bi_5_1 = bi_5_2 = bi_5
     else:
@@ -176,37 +176,37 @@ for url_detailpage in urls_detailpage:
             bi_5_1 = bi_5_2 = bi_5
 
     # 제조국
-    if "제조국" not in detailpage_itemBrief_json_data:
+    if "제조국" not in response_detailpage_itemBrief:
         bi_6 = ""
     else:
         bi_6 = detailpage_itemBrief_json_data['essentials'][5]['description']
 
     # 성분
-    if "표시하여야 하는 모든 성분" not in detailpage_itemBrief_json_data:
+    if "표시하여야 하는 모든 성분" not in response_detailpage_itemBrief:
         bi_7 = ""
     else:
         bi_7 = detailpage_itemBrief_json_data['essentials'][6]['description']
 
     # 기능성 화장품
-    if "기능성 화장품" not in detailpage_itemBrief_json_data:
+    if "기능성 화장품" not in response_detailpage_itemBrief:
         bi_8 = ""
     else:
         bi_8 = detailpage_itemBrief_json_data['essentials'][7]['description']
 
     # 주의사항
-    if "주의사항" not in detailpage_itemBrief_json_data:
+    if "주의사항" not in response_detailpage_itemBrief:
         bi_9 = ""
     else:
         bi_9 = detailpage_itemBrief_json_data['essentials'][8]['description']
 
     # 품질보증기준
-    if "품질보증기준" not in detailpage_itemBrief_json_data:
+    if "품질보증기준" not in response_detailpage_itemBrief:
         bi_10 = ""
     else:
         bi_10 = detailpage_itemBrief_json_data['essentials'][9]['description']
 
     # 소비자상담관련 전화번호
-    if "소비자상담관련 전화번호" not in detailpage_itemBrief_json_data:
+    if "소비자상담관련 전화번호" not in response_detailpage_itemBrief:
         bi_11 = ""
     else:
         bi_11 = detailpage_itemBrief_json_data['essentials'][10]['description']
