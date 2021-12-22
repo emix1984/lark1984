@@ -14,7 +14,7 @@ time_start = time.time()
 # time_sleep = random.random()*6
 
 # 创建csv文件和表头
-f = open('03_oliveyoung_detailpage_data.csv', mode='a', encoding='utf-8', newline='')
+f = open('03_oliveyoung_detailpage_data99.csv', mode='a', encoding='utf-8', newline='')
 print(f'\033[32m>>>创建csv文件完毕！！！<<<\033[0m')
 csv_writer = csv.DictWriter(f, fieldnames=[
         '产品编码',
