@@ -163,10 +163,13 @@ for url_detailpage in urls_detailpage:
         bi_5_1 = bi_5_2 = bi_5
 
     # 제조국
-    bi_6 = detailpage_itemBrief_json_data['essentials'][5]['description']
-    # 判断空值
-    if bi_6 == 0:
+    if "제조국" not in detailpage_itemBrief_json_data:
+        print("not exist")
         bi_6 = ""
+    else:
+        print('exist')
+        bi_6 = detailpage_itemBrief_json_data['essentials'][5]['description']
+
     # 성분
     bi_7 = detailpage_itemBrief_json_data['essentials'][6]['description']
     # 判断空值
