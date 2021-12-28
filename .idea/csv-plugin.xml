@@ -24,6 +24,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="\01韩国 电商 oliveyoung韩语 20211119\version01 oliveyoung category 单线程\03_oliveyoung_detailpage_data99.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
         <entry key="\01韩国 电商 oliveyoung韩语 20211119\version02 oliveyoung category 多线程\02_oliveyoung_listing.csv">
           <value>
             <Attribute>

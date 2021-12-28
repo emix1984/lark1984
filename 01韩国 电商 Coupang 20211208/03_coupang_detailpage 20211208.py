@@ -70,7 +70,6 @@ for url_detailpage in urls_detailpage:
     # 计数
     n = n+1
     print(f'>>>正在采集第\033[32m{n}\033[0m条数据', url_detailpage)
-    url_detailpage = 'https://www.coupang.com/vp/products/246379487?itemId=780629226&vendorItemId=79769806875&sourceType=CATEGORY&categoryId=486148'
 
     productId = re.findall(f'products/(.*?)\?', url_detailpage)[0]
     itemId = re.findall(f'itemId=(.*?)&', url_detailpage)[0]
