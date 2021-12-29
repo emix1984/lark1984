@@ -10,7 +10,7 @@ headers = {
         }
 
 # 构造产品链接参数
-productId="1731254442"
+productId = "1731254442"
 reviews_count =3040
 # 单页产品数量
 review_page_size = 100
