@@ -104,9 +104,9 @@ for url_detailpage in urls_detailpage:
         reviews_count = selector_detailpage.xpath('//*[@id="prod-review-nav-link"]/span[2]/text()').get()
         # # 排序方式  최고:5; 좋음:4; 보통:3; 별로:2; 나쁨:1;默认：空值
         # ratings_review = ""
-        ratings_review = selector_detailpage.xpath('//*[@class="sdp-review__article__order__star__all"]/div/div[2]/text()').getall()[1:]
-        ratings_review = selector_detailpage.xpath('//*[@class="sdp-review__article__order__star__all"]/div/div[3]/text()').getall()
-
+        ratings_review_article_order_starname = selector_detailpage.xpath('//*[@class="sdp-review__article__order__star__all"]/div/div[2]/text()').getall()[1:]
+        ratings_review_article_order_startotal = selector_detailpage.xpath('//*[@class="sdp-review__article__order__star__all"]/div/div[3]/text()').getall()
+        print(ratings_review_article_order_starname,ratings_review_article_order_startotal)
 
         # 折扣sale
         discount_rate = selector_detailpage.xpath('//*[@id="contents"]/div[1]/div/div[3]/div[5]/div[1]/div/div[1]/span[1]/text()').get().strip()
@@ -135,7 +135,7 @@ for url_detailpage in urls_detailpage:
         response_detailpage_itemBrief = requests.get(url=url_detailpage_itemBrief, headers=headers)
         response_itemBrief = response_detailpage_itemBrief.text
         detailpage_itemBrief_json_data = json.loads(response_itemBrief)
-        pprint.pprint(detailpage_itemBrief_json_data)
+        # pprint.pprint(detailpage_itemBrief_json_data)
 
         # 용량 중량
         bi_1 = detailpage_itemBrief_json_data['essentials'][0]['description']
