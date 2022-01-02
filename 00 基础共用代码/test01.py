@@ -7,3 +7,6 @@ headers = {
 
 response = requests.get(url=url, headers=headers)
 print(response)
+ratings_review_option =['','1','2','3','4','5']
+for ratings_review in ratings_review_option:
+        print(ratings_review)
