@@ -120,7 +120,7 @@ for productId in productIds:
                 # 判断用户id为空值时跳出循环
                 if reviewer_userid is None:
                     print(f"在本页 {url_dp_review} 第 {n_article} 找不到任何数据跳过")
-                    continue
+                    break
                 else:
                     # 用户头像 sdp-review__article__list__info__profile
                     reviewer_userico = selector_reviews.xpath(f'/html/body/article[{n_article}]/div[1]/div[1]/img[@src]/@src').get()
@@ -145,5 +145,5 @@ for productId in productIds:
                     # 翻页 页码+1
                     page_review = page_review + 1
 
-                    # print(productId, review_1, reviewer_userid, review_2, review_3, review_5, review_img_lis, url_dp_review)
-                    print(productId, 'ratings_review_option:', ratings_review_option)
+                    print(productId, review_1, reviewer_userid, review_2, review_3, review_5, review_img_lis, url_dp_review)
+                    # print(productId, 'ratings_review_option:', ratings_review_option)
