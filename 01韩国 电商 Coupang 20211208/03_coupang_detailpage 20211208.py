@@ -70,6 +70,7 @@ for url_detailpage in urls_detailpage:
     # 计数
     n = n+1
     print(f'>>>正在采集第\033[32m{n}\033[0m条数据', url_detailpage)
+    # url_detailpage = 'https://www.coupang.com/vp/products/246379487?itemId=780629226&vendorItemId=79769806875&sourceType=CATEGORY&categoryId=486148'
 
     productId = re.findall(f'products/(.*?)\?', url_detailpage)[0]
     itemId = re.findall(f'itemId=(.*?)&', url_detailpage)[0]
@@ -102,12 +103,6 @@ for url_detailpage in urls_detailpage:
 
         # 产品评论数
         reviews_count = selector_detailpage.xpath('//*[@id="prod-review-nav-link"]/span[2]/text()').get()
-        # # 排序方式  최고:5; 좋음:4; 보통:3; 별로:2; 나쁨:1;默认：空值
-        # ratings_review = ""
-        ratings_review = selector_detailpage.xpath('//*[@class="sdp-review__article__order__star__all"]/div/div[2]/text()').getall()[1:]
-        ratings_review = selector_detailpage.xpath('//*[@class="sdp-review__article__order__star__all"]/div/div[3]/text()').getall()
-
-
         # 折扣sale
         discount_rate = selector_detailpage.xpath('//*[@id="contents"]/div[1]/div/div[3]/div[5]/div[1]/div/div[1]/span[1]/text()').get().strip()
         # 市场价
@@ -135,95 +130,93 @@ for url_detailpage in urls_detailpage:
         response_detailpage_itemBrief = requests.get(url=url_detailpage_itemBrief, headers=headers)
         response_itemBrief = response_detailpage_itemBrief.text
         detailpage_itemBrief_json_data = json.loads(response_itemBrief)
-        pprint.pprint(detailpage_itemBrief_json_data)
+        # pprint.pprint(detailpage_itemBrief_json_data)
 
-        # 용량 중량
-        bi_1 = detailpage_itemBrief_json_data['essentials'][0]['description']
-        # 제품 주요 사양
-        if "제품 주요 사양" not in response_itemBrief:
-            bi_2 = ""
-        else:
-            bi_2 = detailpage_itemBrief_json_data['essentials'][1]['description']
-        # 사용기한 또는 개봉 후 사용기간
-        if "사용기한" not in response_itemBrief:
-            bi_3 = ""
-        else:
-            bi_3 = detailpage_itemBrief_json_data['essentials'][2]['description']
-        # 사용방법
-        if "사용방법" not in response_itemBrief:
-            bi_4 = ""
-        else:
-            bi_4 = detailpage_itemBrief_json_data['essentials'][3]['description']
-        # 화장품제조업자 및 화장품책임판매업자
-        if "화장품제조업자" not in response_itemBrief:
-            bi_5 = ""
-            bi_5_1 = bi_5_2 = bi_5
-        else:
-            bi_5 = detailpage_itemBrief_json_data['essentials'][4]['description']
-            if "/" in bi_5:
-                # 通过判断区分화장품제조업자和화장품책임판매업자
-                # 제조사
-                bi_5_1_raw = re.findall(r"(.*)/", bi_5, re.S)[0]
-                # if ":" in bi_5_1_raw:
-                #     bi_5_1_raw_raw = re.findall(r"제조.*:(.*) ", bi_5_1_raw, re.S)[0]
-                #     bi_5_1 = "".join(bi_5_1_raw_raw).strip()
-                # else:
-                bi_5_1 = "".join(bi_5_1_raw).strip()
-                # 판매업자
-                bi_5_2_raw = re.findall(r"/(.*)", bi_5, re.S)[0]
-                # if ":" in bi_5_2_raw:
-                #     bi_5_2_raw_raw = re.findall(r"판매.*::(.*) ", bi_5_2_raw, re.S)[0]
-                #     bi_5_2 = "".join(bi_5_2_raw_raw).strip()
-                # else:
-                bi_5_2 = "".join(bi_5_2_raw).strip()
-            # elif ":" in bi_5:
-            #     bi_5_1_raw_raw = re.findall(r"제조.*:(.*) ", bi_5_1_raw, re.S)[0]
-            #     bi_5_1 = "".join(bi_5_1_raw_raw).strip()
-            #     bi_5_2_raw_raw = re.findall(r"판매.*::(.*) ", bi_5_2_raw, re.S)[0]
-            #     bi_5_2 = "".join(bi_5_2_raw_raw).strip()
+        lis_essentials = detailpage_itemBrief_json_data['essentials']
+        for bi in lis_essentials:
+            bi_title = bi['title']
+            bi_description = bi['description']
+
+            # 용량 중량
+            if '용량(중량)' in bi_title:
+                bi_1 = bi_description
             else:
-                bi_5_1 = bi_5_2 = bi_5
+                bi_1 = ""
+            # 제품 주요 사양
+            if '제품 주요 사양' in bi_title:
+                bi_2 = bi_description
+            else:
+                bi_2 = ""
+            # 사용기한 또는 개봉 후 사용기간
+            if '사용기한' in bi_title:
+                bi_3 = bi_description
+            else:
+                bi_3 = ""
+            # 사용방법
+            if '사용방법' in bi_title:
+                bi_4 = bi_description
+            else:
+                bi_4 = ""
 
-        # 제조국
-        if "제조국" not in response_itemBrief:
-            bi_6 = ""
-        else:
-            bi_6 = re.findall('(.*?)제조국', response_itemBrief)
-            # bi_6 = detailpage_itemBrief_json_data['essentials']['description']
-            print('bi6', bi_6)
-            print(len(bi_6))
+            # 화장품제조업자 및 화장품책임판매업자
+            if '화장품제조업자 및 화장품책임판매업자' in bi_title:
+                bi_5 = bi_description
+                if "/" in bi_5:
+                    # 通过判断区分화장품제조업자和화장품책임판매업자
+                    # 제조사
+                    bi_5_1_raw = re.findall(r"(.*)/", bi_5, re.S)[0]
+                    bi_5_1 = "".join(bi_5_1_raw).strip()
+                    # 판매업자
+                    bi_5_2_raw = re.findall(r"/(.*)", bi_5, re.S)[0]
+                    bi_5_2 = "".join(bi_5_2_raw).strip()
+                elif ":" in bi_5:
+                    # 通过判断区分화장품제조업자和화장품책임판매업자
+                    # 제조사
+                    bi_5_1_raw = re.findall(r"(.*):", bi_5, re.S)[0]
+                    bi_5_1 = "".join(bi_5_1_raw).strip()
+                    # 판매업자
+                    bi_5_2_raw = re.findall(r":(.*)", bi_5, re.S)[0]
+                    bi_5_2 = "".join(bi_5_2_raw).strip()
+            else:
+                bi_5 = ""
+                bi_5_1 = ""
+                bi_5_2 = ""
 
-        # 성분
-        if "표시하여야 하는 모든 성분" not in response_itemBrief:
-            bi_7 = ""
-        else:
-            bi_7 = detailpage_itemBrief_json_data['essentials'][6]['description']
+            # 제조국
+            if '제조국' in bi_title:
+                bi_6 = bi_description
+            else:
+                bi_6 = ""
+            # 성분
+            if '표시하여야 하는 모든 성분' in bi_title:
+                bi_7 = bi_description
+            else:
+                bi_7 = ""
 
-        # 기능성 화장품
-        if "기능성 화장품" not in response_itemBrief:
-            bi_8 = ""
-        else:
-            bi_8 = detailpage_itemBrief_json_data['essentials'][7]['description']
+            # 기능성 화장품
+            if '식품의약품안전처 심사필 유무 (기능성 화장품)' in bi_title:
+                bi_8 = bi_description
+            else:
+                bi_8 = ""
 
-        # 주의사항
-        if "주의사항" not in response_itemBrief:
-            bi_9 = ""
-        else:
-            bi_9 = detailpage_itemBrief_json_data['essentials'][8]['description']
+            # 주의사항
+            if '주의사항' in bi_title:
+                bi_9 = bi_description
+            else:
+                bi_9 = ""
 
-        # 품질보증기준
-        if "품질보증기준" not in response_itemBrief:
-            bi_10 = ""
-        else:
-            bi_10 = detailpage_itemBrief_json_data['essentials'][9]['description']
+            # 품질보증기준
+            if '품질보증기준' in bi_title:
+                bi_10 = bi_description
+            else:
+                bi_10 = ""
 
-        # 소비자상담관련 전화번호
-        if "소비자상담관련 전화번호" not in response_itemBrief:
-            bi_11 = ""
-        else:
-            bi_11 = detailpage_itemBrief_json_data['essentials'][10]['description']
-        # print(bi_1, bi_2,bi_3,bi_4,bi_5,bi_6,bi_7,bi_8,bi_9, bi_10, bi_11)
-
+            # 소비자상담관련 전화번호
+            if '소비자상담관련 전화번호' in bi_title:
+                bi_11 = bi_description
+            else:
+                bi_11 = ""
+            # print(bi_1, bi_2,bi_3,bi_4,bi_5,bi_6,bi_7,bi_8,bi_9, bi_10, bi_11)
         ## returnPolicyVo 退换政策销售者公司信息
         # 사업자번호
         bizNum = detailpage_itemBrief_json_data['returnPolicyVo']['sellerDetailInfo']['bizNum']
@@ -259,78 +252,78 @@ for url_detailpage in urls_detailpage:
             # 商号
             vendorName = detailpage_itemBrief_json_data['returnPolicyVo']['sellerDetailInfo']['vendorName']
         # print('流通商信息', bizNum,ecommReportNum,repAddress,repEmail, repPersonName,repPhoneNum, sellerWithRepPersonName, vendorName)
-    else:
-        prod_buy_header_title = "상품을 찾을 수 없습니다"
-        dp_img = ""
-        prod_sale_price = ""
-        discount_rate = ""
-        origin_price = ""
-        unit_price = ""
-        reviews_count = ""
-        brand_name = ""
-        brand_url = ""
-        bi_1 = ""
-        bi_2 = ""
-        bi_3 = ""
-        bi_4 = ""
-        bi_5 = ""
-        bi_6 = ""
-        bi_7 = ""
-        bi_8 = ""
-        bi_9 = ""
-        bi_10 = ""
-        bi_11 = ""
-        vendorName = ""
-        bizNum = ""
-        ecommReportNum = ""
-        repAddress = ""
-        repEmail = ""
-        repPersonName = ""
-        repPhoneNum = ""
-        sellerWithRepPersonName = ""
 
-
-    #时间戳
-    rightnow = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
-    # print(rightnow)
-
-    # 存储到字典文件
-    dict = {
-        'productId' : productId,
-        'itemId' : itemId,
-        'vendoritems' : vendoritems,
-        '产品名称' : prod_buy_header_title,
-        '产品缩略图' : dp_img,
-        '销售价' : prod_sale_price,
-        '折扣' : discount_rate,
-        '市场价' : origin_price,
-        '每毫升单价' : unit_price,
-        '评论数' : reviews_count,
-        '品牌' : brand_name,
-        '品牌链接' : brand_url,
-        '容量重量': bi_1,
-        '适合肌肤类型': bi_2,
-        '流通期限': bi_3,
-        '使用方法': bi_4,
-        '化妆品制造企业': bi_5_1,
-        '化妆品销售企业': bi_5_2,
-        '制造国家': bi_6,
-        '成分': bi_7,
-        '功能性化妆品': bi_8,
-        '使用注意事项': bi_9,
-        '品质保证基准': bi_10,
-        '售后服务电话': bi_11,
-        '流通公司名称': vendorName,
-        '流通公司营业执照号码': bizNum,
-        '流通公司通信销售申告号码': ecommReportNum,
-        '流通公司地址': repAddress,
-        '流通公司邮箱': repEmail,
-        '流通公司联系人': repPersonName,
-        '流通公司联系电话': repPhoneNum,
-        '流通公司&法人姓名': sellerWithRepPersonName,
-        '当前网址': url_detailpage,
-        '当前时间': rightnow,
-        }
-    # print(dp_name, dp_price2, dp_promo1, brand_name, bi_1, bi_4)
-    csv_writer.writerow(dict)
+        #时间戳
+        rightnow = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+        # print(rightnow)
+        print(bi_1, bi_2, bi_3, bi_4, bi_5, bi_6, bi_7, bi_8, bi_9, bi_10, bi_11)
+        # 存储到字典文件
+        dict = {
+            'productId' : productId,
+            'itemId' : itemId,
+            'vendoritems' : vendoritems,
+            '产品名称' : prod_buy_header_title,
+            '产品缩略图' : dp_img,
+            '销售价' : prod_sale_price,
+            '折扣' : discount_rate,
+            '市场价' : origin_price,
+            '每毫升单价' : unit_price,
+            '评论数' : reviews_count,
+            '品牌' : brand_name,
+            '品牌链接' : brand_url,
+            '容量重量': bi_1,
+            '适合肌肤类型': bi_2,
+            '流通期限': bi_3,
+            '使用方法': bi_4,
+            '化妆品制造企业': bi_5_1,
+            '化妆品销售企业': bi_5_2,
+            '制造国家': bi_6,
+            '成分': bi_7,
+            '功能性化妆品': bi_8,
+            '使用注意事项': bi_9,
+            '品质保证基准': bi_10,
+            '售后服务电话': bi_11,
+            '流通公司名称': vendorName,
+            '流通公司营业执照号码': bizNum,
+            '流通公司通信销售申告号码': ecommReportNum,
+            '流通公司地址': repAddress,
+            '流通公司邮箱': repEmail,
+            '流通公司联系人': repPersonName,
+            '流通公司联系电话': repPhoneNum,
+            '流通公司&法人姓名': sellerWithRepPersonName,
+            '当前网址': url_detailpage,
+            '当前时间': rightnow,
+            }
+        # print(dp_name, dp_price2, dp_promo1, brand_name, bi_1, bi_4)
+        csv_writer.writerow(dict)
     print(f'\033[31m时间：\033[0m', rightnow, f'\033[00;42m>>>写入数据：\033[0m', '品牌：', brand_name, '产品名称：', prod_buy_header_title)
+
+    # else:
+    #     prod_buy_header_title = "상품을 찾을 수 없습니다"
+    #     dp_img = ""
+    #     prod_sale_price = ""
+    #     discount_rate = ""
+    #     origin_price = ""
+    #     unit_price = ""
+    #     reviews_count = ""
+    #     brand_name = ""
+    #     brand_url = ""
+    #     bi_1 = ""
+    #     bi_2 = ""
+    #     bi_3 = ""
+    #     bi_4 = ""
+    #     bi_5 = ""
+    #     bi_6 = ""
+    #     bi_7 = ""
+    #     bi_8 = ""
+    #     bi_9 = ""
+    #     bi_10 = ""
+    #     bi_11 = ""
+    #     vendorName = ""
+    #     bizNum = ""
+    #     ecommReportNum = ""
+    #     repAddress = ""
+    #     repEmail = ""
+    #     repPersonName = ""
+    #     repPhoneNum = ""
+    #     sellerWithRepPersonName = ""

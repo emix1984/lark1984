@@ -41,7 +41,7 @@ if __name__ == '__main__':
         futures = [pool.submit(run, url)
                    for url in urls]
         for future in futures:
-            print(future.result())
+            print('标记线程', future.result())
         for future in as_completed(futures):
             print(future.result())
     print('jieshu', time.time()-time_start)
