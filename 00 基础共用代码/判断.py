@@ -16,3 +16,20 @@ if review_4 is None:
 else:
     review_4 = review_4.strip()
     print(type(review_4), "review4非空")
+
+## continue、pass、break的区别
+# pass
+#
+# 不做任何事情，只起到占位的作用，也就是说它是一个空操作
+#
+# continue
+#
+# 当continue语句在循环结构中执行时，并不会退出循环结构，而是立即结束本次循环，重新开始下一轮循环，也就是说，跳过循环体中在continue语句之后的所有语句，继续下一轮循环。
+#
+# break
+#
+# 当break语句在循环结构中执行时，它会导致立即跳出循环结构，转而执行该结构后面的语句。
+#
+# exit()
+#
+# 结束整个程序
