@@ -191,7 +191,7 @@ for url_dp in urls_detailpage:
         # 构建产品信息post请求
         url_getGoodsArtcAjax = 'https://www.oliveyoung.co.kr/store/goods/getGoodsArtcAjax.do'
         preload = {
-            'goodsNo': product_code,
+            'goodsNo': f'{product_code}',
             'itemNo': '001',
             'pkgGoodsYn': 'N',
         }

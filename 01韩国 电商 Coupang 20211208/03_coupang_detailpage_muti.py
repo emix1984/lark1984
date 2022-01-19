@@ -23,7 +23,7 @@ def responsetxt_coupang(productid,itemsid,vendoritemsid):
 
 def makecsvfile():
     # 创建csv文件和表头
-    f = open(f'03_coupang_detailpage_data.csv', mode='a', encoding='utf-8', newline='')
+    f = open(f'03_coupang_detailpage_data20220105.csv', mode='a', encoding='utf-8', newline='')
     print(f'\033[32m>>>创建csv文件完毕！！！<<<\033[0m')
     csv_writer = csv.DictWriter(f, fieldnames=[
         'productId',
@@ -74,7 +74,7 @@ def readcsv_coupang():
     print(f'\033[32m>>>读取listing.csv文件，进行去重操作中<<<\033[0m', '读取数据条目共计： ', len(data01), '条')
     data02 = data01.drop_duplicates("产品链接")  # 去除重复链接
     print(f'\033[32m>>>数据去重操作已完成<<<\033[0m', '去重操作数据共计： ', len(data02), '条')
-    urls_detailpage = data02["产品链接"]
+    urls_detailpage = data02["产品链接"].tolist()
     return urls_detailpage
 
 ## 详情产品属性提取
@@ -150,6 +150,8 @@ def pasel_coupang_detailpage(url_detailpage,csv_writer,n):
             discount_rate = ""
         # 市场价
         origin_price = selector_detailpage.xpath('//*[@id="contents"]/div[1]/div/div[3]/div[5]/div[1]/div/div[1]/span[2]/text()').get()
+        # 20220107追加代码,去掉市场价中的‘원‘’
+        origin_price = re.sub(f‘원’, '', origin_price)
         # 销售价
         prod_sale_price = selector_detailpage.xpath('//*[@id="contents"]/div[1]/div/div[3]/div[5]/div[1]/div/div[2]/span[1]/strong/text()').get()
         # 每毫升克容量单价
@@ -284,35 +286,36 @@ def pasel_coupang_detailpage(url_detailpage,csv_writer,n):
             vendorName = detailpage_itemBrief_json_data['returnPolicyVo']['sellerDetailInfo']['vendorName']
         # print('流通商信息', bizNum,ecommReportNum,repAddress,repEmail, repPersonName,repPhoneNum, sellerWithRepPersonName, vendorName)
     else:
-        prod_buy_header_title = "상품을 찾을 수 없습니다"
-        dp_img = ""
-        prod_sale_price = ""
-        discount_rate = ""
-        origin_price = ""
-        unit_price = ""
-        reviews_count = ""
-        brand_name = ""
-        brand_url = ""
-        bi_1 = ""
-        bi_2 = ""
-        bi_3 = ""
-        bi_4 = ""
-        bi_5_1 = ""
-        bi_5_2 = ""
-        bi_6 = ""
-        bi_7 = ""
-        bi_8 = ""
-        bi_9 = ""
-        bi_10 = ""
-        bi_11 = ""
-        vendorName = ""
-        bizNum = ""
-        ecommReportNum = ""
-        repAddress = ""
-        repEmail = ""
-        repPersonName = ""
-        repPhoneNum = ""
-        sellerWithRepPersonName = ""
+        continue
+        # prod_buy_header_title = "상품을 찾을 수 없습니다"
+        # dp_img = ""
+        # prod_sale_price = ""
+        # discount_rate = ""
+        # origin_price = ""
+        # unit_price = ""
+        # reviews_count = ""
+        # brand_name = ""
+        # brand_url = ""
+        # bi_1 = ""
+        # bi_2 = ""
+        # bi_3 = ""
+        # bi_4 = ""
+        # bi_5_1 = ""
+        # bi_5_2 = ""
+        # bi_6 = ""
+        # bi_7 = ""
+        # bi_8 = ""
+        # bi_9 = ""
+        # bi_10 = ""
+        # bi_11 = ""
+        # vendorName = ""
+        # bizNum = ""
+        # ecommReportNum = ""
+        # repAddress = ""
+        # repEmail = ""
+        # repPersonName = ""
+        # repPhoneNum = ""
+        # sellerWithRepPersonName = ""
     #时间戳
     rightnow = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
     # print(rightnow)
@@ -368,11 +371,11 @@ n = 0
 # 项目计时用
 time_start = time.time()
 # max_worker 是进程/线程数, 默认为 CPU 核心数
-with ThreadPoolExecutor(max_workers=4) as pool:
+with ThreadPoolExecutor() as pool:
     futures = [pool.submit(pasel_coupang_detailpage, url_detailpage,csv_writer,n)
                for url_detailpage in urls_detailpage ]
     n = n + 1
     for future in futures:
         print('线程是否有错误程结果：', future.result())
     for future in as_completed(futures):
-        print('线程结果：',future.result())
+        print('线程结果：', future.result())

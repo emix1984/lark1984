@@ -4,10 +4,10 @@
 
 # # tqdm模块
 #
-# import time
-# from tqdm import tqdm
-# for i in tqdm(range(100)):
-#     time.sleep(0.05)
+import time
+from tqdm import tqdm
+for i in tqdm(range(100)):
+    time.sleep(0.05)
 
 
 # # progress模块
